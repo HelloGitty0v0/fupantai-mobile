@@ -1,0 +1,15 @@
+{
+  "name": "复盘台",
+  "short_name": "复盘台",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f3f1",
+  "theme_color": "#f2f3f1",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "description": "一句话记录交易，回看结果，按周期复盘。"
+}

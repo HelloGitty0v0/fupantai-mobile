@@ -1,0 +1,1650 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="复盘台"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png"><title>复盘台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --surface-2:#e8eae7; --line:#d6d9d5; --hair:#e5e7e4;
+  --ink:#1b1e1c; --ink-2:#4e5450; --ink-3:#80867f;
+  --accent:#8f5512; --accent-ink:#ffffff; --accent-soft:rgba(143,85,18,.10);
+  --red:#cf3636; --green:#1b8550; --warn:#9c600c; --warn-soft:rgba(161,100,15,.11);
+  --shadow:0 1px 2px rgba(22,26,24,.05),0 6px 20px rgba(22,26,24,.05);
+  --scrim:rgba(12,14,13,.45);
+  --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111315; --surface:#191c1e; --surface-2:#23272a; --line:#30353a; --hair:#25292c;
+    --ink:#ebeae5; --ink-2:#a6aaac; --ink-3:#6f757a;
+    --accent:#d8a45c; --accent-ink:#1b1408; --accent-soft:rgba(216,164,92,.13);
+    --red:#ef6069; --green:#3dbc7c; --warn:#e2ad4a; --warn-soft:rgba(226,173,74,.12);
+    --shadow:none; --scrim:rgba(0,0,0,.62);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111315; --surface:#191c1e; --surface-2:#23272a; --line:#30353a; --hair:#25292c;
+  --ink:#ebeae5; --ink-2:#a6aaac; --ink-3:#6f757a;
+  --accent:#d8a45c; --accent-ink:#1b1408; --accent-soft:rgba(216,164,92,.13);
+  --red:#ef6069; --green:#3dbc7c; --warn:#e2ad4a; --warn-soft:rgba(226,173,74,.12);
+  --shadow:none; --scrim:rgba(0,0,0,.62);
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{--up:var(--red);--down:var(--green);margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body.gu{--up:var(--green);--down:var(--red)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:calc(8px + env(safe-area-inset-top,0px)) calc(72px + env(safe-area-inset-bottom,0px))}
+
+/* header */
+.top{display:flex;align-items:flex-end;gap:12px;padding-block:10px 12px}
+.brand h1{font-family:var(--serif);font-weight:900;font-size:27px;letter-spacing:.08em;margin:0;line-height:1.1}
+.brand p{margin:3px 0 0;font-size:12px;color:var(--ink-3);letter-spacing:.1em}
+.sync{margin-left:auto;font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:6px;padding-bottom:9px;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ink-3)}
+.dot.ok{background:var(--accent)}
+.icon-btn{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:var(--ink-2);background:transparent;border:1px solid var(--line);flex:none}
+.icon-btn svg{width:18px;height:18px}
+
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:4px 12px}
+.tabs-in{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.tab{border:0;background:transparent;padding:8px 0;border-radius:9px;font-size:15px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.badge{font-family:var(--mono);font-size:11px;line-height:1;background:var(--warn-soft);color:var(--warn);border-radius:999px;padding:3px 6px;font-weight:600}
+.banner{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:9px 12px;margin-bottom:12px}
+
+/* compose */
+.compose{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;box-shadow:var(--shadow);display:grid;gap:11px}
+#say{width:100%;min-height:96px;max-height:45vh;border:0;background:transparent;color:var(--ink);font-size:17px;line-height:1.55;resize:none;outline:none;padding:0;display:block}
+#say::placeholder{color:var(--ink-3)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hint{font-size:12px;color:var(--ink-3)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:7px 12px;font-size:14px;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
+.btn svg{width:17px;height:17px;flex:none}
+.btn.accent{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45}
+.btn-primary{width:100%;border:0;background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:13px;font-size:16px;font-weight:600;letter-spacing:.06em}
+.btn-primary:disabled{opacity:.38}
+.kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kind{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink-2);font-size:14px}
+.kind[aria-pressed="true"]{border-color:var(--accent);color:var(--ink);background:var(--accent-soft);font-weight:600}
+.stone{width:11px;height:11px;border-radius:50%;flex:none;display:inline-block}
+.stone.trade{background:var(--ink)}
+.stone.pass{border:1.6px solid var(--ink)}
+.stone.paper{border:1.6px dashed var(--ink)}
+.chiprow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;margin-inline:-2px;padding-inline:2px}
+.chiprow::-webkit-scrollbar{display:none}
+.quick-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;margin-inline:-2px;padding-inline:2px}
+.quick-row::-webkit-scrollbar{display:none}
+.quick-row .chip{min-width:58px;text-align:center}
+.quick-fields{border-top:1px solid var(--hair);padding-top:9px}
+.quick-fields summary{list-style:none;color:var(--ink-2);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.quick-fields summary::-webkit-details-marker{display:none}
+.quick-fields summary::before{content:"+";display:grid;place-items:center;width:18px;height:18px;border:1px solid var(--line);border-radius:50%;font-family:var(--mono);font-size:14px;color:var(--accent)}
+.quick-fields[open] summary::before{content:"−"}
+.quick-fields .grid2{margin-top:10px}
+.quick-fields .f{gap:5px}
+.quick-fields .f > label{font-size:11px;letter-spacing:.04em}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.lbl{font-size:12px;color:var(--ink-3);letter-spacing:.08em;flex:none;margin-right:2px}
+.chip{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink-2);border-radius:999px;padding:5px 11px;font-size:13px;line-height:1.35}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.chip.risky[aria-pressed="true"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.parse{background:var(--surface-2);border-radius:10px;padding:9px 11px;font-size:13.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:3px 12px;align-items:center;min-height:40px}
+.parse b{color:var(--ink);font-weight:600}
+.parse .dim{color:var(--ink-3)}
+.warns{display:grid;gap:6px}
+.warns:empty{display:none}
+.warn{font-size:13px;color:var(--warn);background:var(--warn-soft);border-radius:9px;padding:7px 10px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{position:relative;width:64px;height:64px;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2);padding:0;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .x{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:var(--scrim);color:#fff;font-size:14px;line-height:19px;text-align:center;border:0;padding:0}
+.thumb .st{position:absolute;inset:0;display:grid;place-items:center;background:var(--scrim);color:#fff;font-size:11px}
+
+/* chart read */
+.chart{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;background:var(--surface);display:grid;gap:4px}
+.chart summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer}
+.chart summary::-webkit-details-marker{display:none}
+.chart-h{font-size:12.5px;color:var(--ink-3);letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.chart-h .grow{flex:1}
+.verdict{font-weight:600;border-radius:999px;padding:1px 9px;font-size:12.5px;white-space:nowrap}
+.v-ok{color:var(--accent);background:var(--accent-soft)}
+.v-wait{color:var(--warn);background:var(--warn-soft)}
+.v-no{color:var(--ink-2);background:var(--surface-2)}
+.md{color:var(--ink-2);font-size:14px;line-height:1.6}
+.md p{margin:.35em 0}
+.md ul{margin:.25em 0;padding-left:1.15em}
+.md li{margin:.15em 0}
+.md strong{color:var(--ink);font-weight:600}
+.md h4{margin:.6em 0 .2em;font-size:14px;color:var(--ink)}
+.linkbtn{border:0;background:none;padding:0;color:var(--accent);font-size:13px;justify-self:start}
+.thinking{color:var(--ink-3);font-size:13.5px}
+
+/* sections & rows */
+.sec{margin-top:24px}
+.sec-h{display:flex;align-items:baseline;gap:8px;margin:0 2px 9px}
+.sec-h h2{font-family:var(--serif);font-weight:600;font-size:17px;margin:0;letter-spacing:.05em}
+.sec-h .sub{font-size:12px;color:var(--ink-3)}
+.sec-h .more{margin-left:auto;font-size:13px;color:var(--accent);background:none;border:0;padding:0}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{padding:13px 14px;border-top:1px solid var(--hair);display:grid;gap:7px;cursor:pointer;min-width:0}
+.row:first-child{border-top:0}
+.row.example{cursor:default}
+.row-top{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);min-width:0;flex-wrap:wrap}
+.tk{font-family:var(--mono);font-weight:600;color:var(--ink);background:none;border:0;padding:0;font-size:14px}
+.nm{font-size:12.5px;color:var(--ink-3)}
+.no{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.busy{font-size:11.5px;color:var(--ink-3)}
+.ex{font-size:10.5px;letter-spacing:.12em;color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+.txt{margin:0;font-size:15px;color:var(--ink);word-break:break-word;white-space:pre-wrap}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:2px 12px}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:12px;padding:1px 8px;border-radius:6px;background:var(--surface-2);color:var(--ink-2)}
+.tag.risky{color:var(--warn);background:var(--warn-soft)}
+.out{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.out .q{font-size:12.5px;color:var(--ink-3);margin-right:2px}
+.ob{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 11px;font-size:13.5px;color:var(--ink)}
+.ob:active{background:var(--surface-2)}
+.res{font-size:13px;font-weight:600;padding:2px 9px;border-radius:7px;font-variant-numeric:tabular-nums}
+.res.pos{color:var(--up);background:color-mix(in srgb,var(--up) 13%,transparent)}
+.res.neg{color:var(--down);background:color-mix(in srgb,var(--down) 13%,transparent)}
+.res.neu{color:var(--ink-2);background:var(--surface-2)}
+.judge{font-size:12.5px;color:var(--ink-2)}
+.lesson{font-size:13px;color:var(--ink-2)}
+.note-in{display:grid;grid-template-columns:84px 1fr auto;gap:6px}
+.inp{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;padding:8px 10px;font-size:16px;outline:none;min-width:0}
+.inp:focus{border-color:var(--accent)}
+textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
+.empty{padding:22px 16px;text-align:center;color:var(--ink-3);font-size:14px}
+.day{font-size:12px;color:var(--ink-3);letter-spacing:.06em;padding:16px 4px 7px}
+.day:first-child{padding-top:4px}
+
+/* list tab */
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.list-search{margin-bottom:8px}
+.list-search .inp{background:var(--surface);padding-block:9px}
+
+/* review tab */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.lead{font-size:14.5px;color:var(--ink-2);margin:0}
+.lead b{color:var(--ink);font-family:var(--mono)}
+.cmp{display:grid;gap:12px;margin-top:4px}
+.cmp-row{display:grid;grid-template-columns:4.2em 1fr;gap:4px 12px;align-items:center}
+.cmp-row .k{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.cmp-row .v{font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;flex-wrap:wrap;gap:0 10px}
+.cmp-row .v .d{color:var(--ink-3)}
+.bar{grid-column:2;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .w{background:var(--up)} .bar .l{background:var(--down)} .bar .f{background:var(--ink-3)}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-weight:500;color:var(--ink-3);font-size:12px;padding:6px 6px;border-bottom:1px solid var(--hair);white-space:nowrap}
+.tbl td{padding:8px 6px;border-bottom:1px solid var(--hair)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl th.n{text-align:right}
+.pos-t{color:var(--up)} .neg-t{color:var(--down)}
+.review-out{margin-top:10px}
+.stack{display:grid;gap:12px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.small{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
+.past{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px}
+.past summary{cursor:pointer;font-size:13px;color:var(--ink-2)}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:var(--scrim)}
+.sheet-panel{position:relative;width:100%;max-width:560px;max-height:90vh;overflow:auto;background:var(--surface);border-radius:18px 18px 0 0;padding:10px 16px calc(22px + env(safe-area-inset-bottom,0px));overscroll-behavior:contain}
+.grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.sheet h3{font-family:var(--serif);font-size:18px;margin:0;display:flex;align-items:baseline;gap:10px;font-weight:600}
+.sheet h3 small{font-family:var(--mono);font-size:12px;color:var(--ink-3);font-weight:400}
+.f{display:grid;gap:7px;margin-top:15px}
+.f > label,.f > .flabel{font-size:12px;color:var(--ink-3);letter-spacing:.08em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2 .f{margin-top:0}
+.sheet-actions{display:flex;gap:10px;margin-top:20px}
+.sheet-actions .btn-primary{flex:1}
+.btn-danger{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
+.toggle-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--hair)}
+.toggle-row:first-of-type{border-top:0}
+.toggle-row .t{flex:1;font-size:14.5px}
+.toggle-row .t small{display:block;font-size:12px;color:var(--ink-3)}
+.sw{width:46px;height:28px;border-radius:14px;border:0;background:var(--surface-2);position:relative;flex:none;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s}
+.sw[aria-checked="true"]{background:var(--accent)}
+.sw[aria-checked="true"]::after{transform:translateX(18px)}
+.bf-list{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px}
+.bf-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--hair);font-size:14px}
+.bf-item:first-child{border-top:0}
+.bf-item input{width:18px;height:18px;accent-color:var(--accent)}
+
+.lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;overflow:auto;padding:16px}
+.lb img{max-width:100%;max-height:100%;object-fit:contain}
+.toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;transition:opacity .2s,transform .2s;z-index:70;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:380px){.note-in{grid-template-columns:1fr 1fr}.note-in .inp:nth-child(2){grid-column:1 / -1;order:3}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>复盘台</h1><p>一句话，记一手</p></div>
+    <span class="sync" id="sync"><i class="dot"></i><span>连接中</span></span>
+    <button class="icon-btn" data-act="settings" aria-label="设置">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    </button>
+  </header>
+
+  <nav class="tabs"><div class="tabs-in" role="tablist">
+    <button class="tab" role="tab" data-act="tab" data-t="log" aria-selected="true">记</button>
+    <button class="tab" role="tab" data-act="tab" data-t="list" aria-selected="false">回看<span class="badge" id="badge" hidden></span></button>
+    <button class="tab" role="tab" data-act="tab" data-t="review" aria-selected="false">复盘</button>
+  </div></nav>
+
+  <div class="banner" id="banner" hidden></div>
+  <div class="banner" id="offline-ready" hidden>页面已准备好离线使用。可添加到主屏幕，断网也能记录。</div>
+
+  <!-- 记 -->
+  <section id="p-log">
+    <div class="compose">
+      <textarea id="say" rows="3" enterkeyhint="done" placeholder="一句话就行，写多少算多少&#10;例：ALAB 放量突破 341 买了一半，止损 318，有点怕踏空&#10;例：MRVL 离50日线太远，忍住没追" aria-label="这一手"></textarea>
+      <div class="thumbs" id="c-thumbs" hidden></div>
+      <div class="tools">
+        <label class="btn" id="c-shot-btn" for="c-file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>K线截图
+        </label>
+        <input type="file" id="c-file" class="vh" accept="image/*" multiple>
+        <button class="btn accent" id="c-chart-btn" data-act="chart-compose" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 4v16M6 8h-2v6h2M12 6v14M12 9h-2v5h2M18 3v15M18 6h-2v8h2"/></svg>按我的规则看图
+        </button>
+        <span class="hint" id="c-hint">手机键盘的麦克风可以直接说</span>
+      </div>
+      <div id="c-chart" hidden></div>
+      <div class="kinds" id="c-kinds" role="group" aria-label="类型">
+        <button class="kind" data-act="kind" data-k="trade" aria-pressed="true"><span class="stone trade"></span>交易</button>
+        <button class="kind" data-act="kind" data-k="pass" aria-pressed="false"><span class="stone pass"></span>不交易</button>
+        <button class="kind" data-act="kind" data-k="paper" aria-pressed="false"><span class="stone paper"></span>模拟</button>
+      </div>
+      <div class="quick-row" id="c-side" role="group" aria-label="动作"></div>
+      <details class="quick-fields">
+        <summary>补充标的和价格（可不填）</summary>
+        <div class="grid2">
+          <div class="f"><label for="c-ticker">标的</label><input class="inp" id="c-ticker" autocapitalize="characters" autocorrect="off" placeholder="如 NVDA / 0700" enterkeyhint="next"></div>
+          <div class="f"><label for="c-price">价格</label><input class="inp" id="c-price" inputmode="decimal" placeholder="成交或观察价"></div>
+          <div class="f"><label for="c-stop">止损</label><input class="inp" id="c-stop" inputmode="decimal" placeholder="可不填"></div>
+          <div class="f"><label for="c-target">目标价</label><input class="inp" id="c-target" inputmode="decimal" placeholder="可不填"></div>
+        </div>
+      </details>
+      <div class="chiprow" id="c-moods"></div>
+      <div class="parse" id="c-parse"></div>
+      <div class="warns" id="c-warns"></div>
+      <button class="btn-primary" id="c-save" data-act="save" disabled>记下这一手</button>
+    </div>
+
+    <div class="sec" id="queue-sec" hidden>
+      <div class="sec-h"><h2>该回看了</h2><span class="sub" id="queue-sub"></span><button class="more" data-act="go-queue" id="queue-more" hidden>全部</button></div>
+      <div class="list" id="queue"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>最近几手</h2><button class="more" data-act="tab" data-t="list">全部记录</button></div>
+      <div class="list" id="recent"></div>
+    </div>
+  </section>
+
+  <!-- 回看 -->
+  <section id="p-list" hidden>
+    <div class="list-search"><input class="inp" id="list-search" type="search" placeholder="搜索标的、原话或标签" enterkeyhint="search" autocomplete="off"></div>
+    <div class="filters" id="filters"></div>
+    <div id="all"></div>
+  </section>
+
+  <!-- 复盘 -->
+  <section id="p-review" hidden>
+    <div class="filters" id="periods"></div>
+    <div class="stack" id="rv"></div>
+  </section>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-bg" data-act="close-sheet"></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true"><div class="grip"></div><div id="sheet-body"></div></div>
+</div>
+<div class="lb" id="lb" hidden data-act="close-lb"><img id="lb-img" alt="K线截图"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+(function(){
+/* ---------------- helpers ---------------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DAY = 864e5;
+const isNum = v => typeof v === "number" && isFinite(v);
+const num = v => { if (v === null || v === undefined || v === "") return null; const n = typeof v === "number" ? v : parseFloat(String(v).replace(/[,，\s]/g, "")); return isFinite(n) ? n : null; };
+const fmt = n => isNum(n) ? String(+n.toFixed(Math.abs(n) >= 100 ? 2 : 3)) : "";
+const fmtPct = p => isNum(p) ? (p > 0 ? "+" : "") + (+p.toFixed(1)) + "%" : "";
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+};
+const WD = "日一二三四五六";
+function fmtTime(ts){ const d = new Date(ts), n = new Date(); const hm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  return (d.getFullYear() !== n.getFullYear() ? d.getFullYear() + "/" : "") + (d.getMonth()+1) + "/" + d.getDate() + " " + hm; }
+function dayLabel(ts){ const d = new Date(ts); const t0 = new Date(); t0.setHours(0,0,0,0);
+  const diff = Math.round((t0 - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / DAY);
+  const base = (d.getFullYear() !== t0.getFullYear() ? d.getFullYear() + "年" : "") + (d.getMonth()+1) + "月" + d.getDate() + "日 周" + WD[d.getDay()];
+  return diff === 0 ? "今天 · " + base : diff === 1 ? "昨天 · " + base : base; }
+function todayStr(){ const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+const newId = () => "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+let toastT;
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2600); }
+
+/* ---------------- vocab ---------------- */
+const KINDS = { trade: "交易", pass: "不交易", paper: "模拟" };
+const MOODS = ["平静","有信心","犹豫","害怕","兴奋","急躁","FOMO","报复","无聊"];
+const RISKY = new Set(["兴奋","急躁","FOMO","报复","无聊"]);
+const MOOD_KW = [
+  ["FOMO", /fomo|踏空|怕错过|怕买不到|追高|追进去/i],
+  ["急躁", /急躁|着急|急了|手痒|忍不住|冲动|上头/],
+  ["报复", /报复|回本|扳回|不甘心|赌一把/],
+  ["兴奋", /兴奋|激动|爽|嗨/],
+  ["害怕", /害怕|恐慌|慌|不敢|怕跌|怕亏/],
+  ["犹豫", /犹豫|纠结|拿不准|不确定|没把握/],
+  ["无聊", /无聊|闲着|手闲/],
+  ["有信心", /有信心|自信|笃定|有把握|很确定/],
+  ["平静", /平静|冷静|淡定|按计划|计划内|照计划/]
+];
+const REASONS = ["突破","回踩","箱体","趋势","均线","财报","消息","基本面","抄底","追涨","补仓","别人推荐","直觉","没突破","位置太高","大盘弱","财报前","没计划"];
+const REASON_KW = [
+  ["没突破", /没突破|未突破|还没突破|假突破|突破失败/],
+  ["突破", /突破|新高|breakout/i],
+  ["回踩", /回踩|回调到|回撤到|缩量回/],
+  ["箱体", /箱体|区间|箱底|箱顶|震荡/],
+  ["均线", /均线|\d+\s*日线|ma\s*\d+|ema/i],
+  ["趋势", /趋势|主升|上升通道/],
+  ["财报前", /财报前|业绩前/],
+  ["财报", /财报|业绩|earnings/i],
+  ["消息", /消息|新闻|公告|合作|利好|利空/],
+  ["基本面", /基本面|估值|便宜|三高|产业链|订单/],
+  ["抄底", /抄底|超跌|捡便宜/],
+  ["追涨", /追涨|追高/],
+  ["补仓", /补仓|摊平/],
+  ["别人推荐", /推荐|群里|博主|朋友说|大V/],
+  ["直觉", /直觉|盘感/],
+  ["位置太高", /太远|乖离|涨太多|太高|偏离/],
+  ["大盘弱", /大盘(弱|差|不好|跌)|纳指跌|恒指跌|市场弱/],
+  ["没计划", /没计划|计划外|临时起意/]
+];
+const REASON_EXCL = { "突破": "没突破", "财报": "财报前" };
+
+const NAMES = [
+  ["泡泡玛特","9992.HK"],["腾讯","0700.HK"],["阿里","9988.HK"],["小米","1810.HK"],["美团","3690.HK"],["港交所","0388.HK"],
+  ["友邦","1299.HK"],["携程","9961.HK"],["东方电气","1072.HK"],["哈尔滨电气","1133.HK"],["哈电","1133.HK"],["英诺赛科","2577.HK"],
+  ["中芯","0981.HK"],["比亚迪","1211.HK"],["快手","1024.HK"],["京东","9618.HK"],
+  ["英伟达","NVDA"],["美光","MU"],["闪迪","SNDK"],["特斯拉","TSLA"],["苹果","AAPL"],["微软","MSFT"],["谷歌","GOOGL"],["亚马逊","AMZN"],
+  ["博通","AVGO"],["台积电","TSM"],["迈威尔","MRVL"],["美满","MRVL"],["安森美","ON"],["维谛","VRT"],["伊顿","ETN"],["超威","AMD"],
+  ["超微电脑","SMCI"],["英特尔","INTC"],["甲骨文","ORCL"],["奈飞","NFLX"],["安谋","ARM"],
+  ["思源电气","002028.SZ"],["特变电工","600089.SH"],["金盘科技","688676.SH"],["伊戈尔","002922.SZ"],["英维克","002837.SZ"],
+  ["中恒电气","002364.SZ"],["贵州茅台","600519.SH"],["茅台","600519.SH"],["宁德时代","300750.SZ"],["中际旭创","300308.SZ"],
+  ["新易盛","300502.SZ"],["胜宏科技","300476.SZ"],["工业富联","601138.SH"]
+].sort((a, b) => b[0].length - a[0].length);
+const STOP = new Set(("FOMO ETF AI MA EMA SMA SL TP HK US CEO CFO OCP HBM GPU CPU OK VCP RSI MACD KDJ BOLL IPO PE PB PS EPS ATH USD HKD CNY RMB " +
+  "VR ASIC CPO SST HVDC CAN SLIM SEPA BOM JLAW LAW AH PUT CALL IV OTM ITM ATM DD YTD QOQ YOY VIX CPI FED FOMC PPI GDP NFP ROE ROI RS RPS " +
+  "NO YES THE AND FOR BUT NOT BUY SELL LONG SHORT STOP LOSS WIN HOLD WAIT GAP LOL HMM EMM TOP LOW HIGH DAY WEEK KK").split(" "));
+
+function normTicker(t){
+  if (!t) return null;
+  t = String(t).trim().toUpperCase().replace(/\s+/g, "");
+  let m;
+  if ((m = t.match(/^(\d{1,5})\.?HK$/))) return String(parseInt(m[1], 10)).padStart(4, "0") + ".HK";
+  if ((m = t.match(/^(\d{6})(?:\.(SH|SZ|SS|BJ))?$/))) {
+    const suf = m[2] ? (m[2] === "SS" ? "SH" : m[2]) : (m[1][0] === "6" ? "SH" : /[84]/.test(m[1][0]) ? "BJ" : "SZ");
+    return m[1] + "." + suf;
+  }
+  if (/^\d{4,5}$/.test(t)) return String(parseInt(t, 10)).padStart(4, "0") + ".HK";
+  return t;
+}
+function marketOf(t){ if (!t) return null; if (/\.HK$/.test(t)) return "HK"; if (/\.(SH|SZ|BJ)$/.test(t)) return "A"; if (/^[A-Z]/.test(t)) return "US"; return null; }
+
+/* ---------------- one-sentence parser ---------------- */
+const PASS_RE = /没买|不买|没进|不进|没追|不追|观望|放弃|忍住|先不|不碰|没动|不交易|没操作|没下单|没卖|不卖|拿住|继续拿|没走|没加|不加|没减|算了/;
+const PASS_SELL_RE = /没卖|不卖|拿住|继续拿|没走|没减/;
+const PAPER_RE = /模拟|假如|假设|纸面|虚拟|如果买/;
+const SELL_RE = /卖|清仓|减仓|平仓|止盈了|止损了|止损出|出了|走了|跑了|离场/;
+const BUY_RE = /买|加仓|建仓|开仓|进了|入了|上车|做多|入场|抄底/;
+
+function findTickers(t){
+  const c = []; let m;
+  const push = (m, code) => { const pre = m[1].length; c.push({ i: m.index + pre, len: m[0].length - pre, tk: code }); };
+  const reHK = /(^|[^\d.])(\d{4,5})\s*\.?\s*HK(?![A-Za-z])/gi;
+  while ((m = reHK.exec(t))) push(m, normTicker(m[2] + ".HK"));
+  const reHK2 = /(^|[^\d])(?:港股|代码)\s*(\d{4,5})(?![\d.])/g;
+  while ((m = reHK2.exec(t))) push(m, normTicker(m[2] + ".HK"));
+  const reHK0 = /(^|[^\d.])(0\d{3,4})(?![\d.%])/g;
+  while ((m = reHK0.exec(t))) push(m, normTicker(m[2] + ".HK"));
+  const reA = /(^|[^\d.])([036]\d{5}(?:\.(?:SH|SZ))?)(?![\d.%])/gi;
+  while ((m = reA.exec(t))) push(m, normTicker(m[2]));
+  const reUS = /(^|[^A-Za-z])([A-Za-z]{2,5})(?![A-Za-z])/g;
+  while ((m = reUS.exec(t))) { const u = m[2].toUpperCase(); if (!STOP.has(u)) push(m, u); }
+  for (const [nm, tk] of NAMES) { const k = t.indexOf(nm); if (k >= 0 && !c.some(x => k >= x.i && k < x.i + x.len)) c.push({ i: k, len: nm.length, tk, name: nm }); }
+  c.sort((a, b) => a.i - b.i);
+  return c;
+}
+
+function findNums(t, skip){
+  const out = []; const re = /\d+(?:\.\d+)?/g; let m;
+  while ((m = re.exec(t))) {
+    const i = m.index, j = i + m[0].length;
+    if (skip.some(r => i < r.i + r.len && j > r.i)) continue;
+    if (i > 0 && /[A-Za-z]/.test(t[i-1])) continue;
+    const prev = t.slice(Math.max(0, i - 7), i), next = t.slice(j, j + 4);
+    const v = parseFloat(m[0]);
+    let role;
+    if (/^\s*%/.test(next)) role = "pct";
+    else if (/^[\/\-:：月]\d/.test(next) || /\d[\/\-:：月]$/.test(prev)) role = "skip";
+    else if (/^\s*(日线|日均线|日|号|天|周|个月|月|年|分钟|小时|点(?![\d半])|成|倍|万|千|亿|手|k|K|w|W)/.test(next)) role = "skip";
+    else if (/^\s*股/.test(next)) role = "qty";
+    else if (/(止损|sl|SL|stop|防守)\s*(价|位|在|设在|设|放在|放|是|到)?\s*[:：]?\s*$/.test(prev)) role = "stop";
+    else if (/(目标|止盈|tp|TP|看到|看上)\s*(价|位|在|到|是)?\s*[:：]?\s*$/.test(prev)) role = "target";
+    else role = "price";
+    let val = v;
+    if (role === "pct" && /(-|−|亏|跌|损|赔)\s*了?\s*$/.test(prev)) val = -v;
+    out.push({ v: val, role, strong: role === "price" && /(@|在|价|成本|于|入场|进场|买入|卖出|买|卖|加|减|到|是)\s*了?\s*$/.test(prev) });
+  }
+  return out;
+}
+
+function parse(text){
+  const t = String(text || "");
+  const r = { kind: "trade", side: null, ticker: null, name: null, market: null, price: null, stop: null, target: null, qty: null, pct: null, moods: [], reasons: [] };
+  if (!t.trim()) return r;
+  if (PASS_RE.test(t)) { r.kind = "pass"; r.side = PASS_SELL_RE.test(t) ? "sell" : "buy"; }
+  else {
+    if (PAPER_RE.test(t)) r.kind = "paper";
+    r.side = SELL_RE.test(t) ? "sell" : BUY_RE.test(t) ? "buy" : (r.kind === "paper" ? "buy" : null);
+  }
+  const tks = findTickers(t);
+  if (tks.length) { r.ticker = tks[0].tk; r.name = tks[0].name || null; r.market = marketOf(r.ticker); }
+  const nums = findNums(t, tks);
+  const first = role => { const x = nums.find(n => n.role === role); return x ? x.v : null; };
+  r.stop = first("stop"); r.target = first("target"); r.qty = first("qty"); r.pct = first("pct");
+  const strong = nums.find(n => n.role === "price" && n.strong);
+  r.price = strong ? strong.v : first("price");
+  for (const [m, re] of MOOD_KW) if (re.test(t) && r.moods.length < 2) r.moods.push(m);
+  const hits = REASON_KW.filter(([, re]) => re.test(t)).map(([k]) => k);
+  r.reasons = hits.filter(k => !(REASON_EXCL[k] && hits.includes(REASON_EXCL[k]))).slice(0, 3);
+  return r;
+}
+
+/* ---------------- state ---------------- */
+const S = {
+  mode: "boot", entries: [], reviews: [], loaded: false,
+  db: null, assets: null, sample: null, downloads: null, limits: null,
+  tab: "log", filter: "all", query: "", tk: null, period: LS.get("fpt2.period", 30),
+  compose: { kind: "trade", kindLocked: false, side: null, sideLocked: false, moods: [], moodsLocked: false, fields: { ticker: "", price: "", stop: "", target: "" }, shots: [], chart: null },
+  cp: parse(""), aiBusy: new Set(), justSettled: null, chartRun: null, reviewRun: null,
+  aiOn: LS.get("fpt2.ai", true), greenUp: LS.get("fpt2.gu", false)
+};
+if (S.greenUp) document.body.classList.add("gu");
+
+/* ---------------- storage adapter ---------------- */
+const LOCAL_KEY = "fpt2.local";
+const Local = {
+  data: { entries: {}, reviews: {} },
+  load(){ const d = LS.get(LOCAL_KEY, null); if (d && d.entries) this.data = d; },
+  save(data){
+    if (!LS.set(LOCAL_KEY, data)) throw { code: "local_quota" };
+    this.data = data;
+  },
+  emit(){
+    S.entries = Object.entries(this.data.entries).map(([id, v]) => Object.assign({ id }, v)).sort((a, b) => b.createdAt - a.createdAt);
+    S.reviews = Object.entries(this.data.reviews || {}).map(([id, v]) => Object.assign({ id }, v)).sort((a, b) => b.createdAt - a.createdAt);
+    S.loaded = true; renderAll();
+  }
+};
+function deepMerge(a, b){
+  const o = Object.assign({}, a || {});
+  for (const k in b) {
+    const v = b[k];
+    if (v && typeof v === "object" && !Array.isArray(v) && o[k] && typeof o[k] === "object" && !Array.isArray(o[k])) o[k] = deepMerge(o[k], v);
+    else o[k] = Array.isArray(v) ? v.slice() : v;
+  }
+  return o;
+}
+const Store = {
+  async set(id, data){
+    if (S.mode === "cloud") return S.db.collection("entries").doc(id).set(data);
+    const entries = Object.assign({}, Local.data.entries, { [id]: JSON.parse(JSON.stringify(data)) });
+    Local.save(Object.assign({}, Local.data, { entries })); Local.emit();
+  },
+  async update(id, patch){
+    if (S.mode === "cloud") return S.db.doc("entries/" + id).update(patch);
+    if (!Local.data.entries[id]) return;
+    const entries = Object.assign({}, Local.data.entries, { [id]: deepMerge(Local.data.entries[id], patch) });
+    Local.save(Object.assign({}, Local.data, { entries })); Local.emit();
+  },
+  async remove(id){
+    if (S.mode === "cloud") return S.db.doc("entries/" + id).delete();
+    const entries = Object.assign({}, Local.data.entries); delete entries[id];
+    Local.save(Object.assign({}, Local.data, { entries })); Local.emit();
+  },
+  async addReview(r){
+    const id = newId();
+    if (S.mode === "cloud") return S.db.collection("reviews").doc(id).set(r);
+    const reviews = Object.assign({}, Local.data.reviews || {}, { [id]: r });
+    Local.save(Object.assign({}, Local.data, { reviews })); Local.emit();
+  }
+};
+const wq = new Map();
+function queued(id, fn){
+  const prev = wq.get(id) || Promise.resolve();
+  const next = prev.catch(() => {}).then(fn);
+  wq.set(id, next);
+  next.catch(() => {}).then(() => { if (wq.get(id) === next) wq.delete(id); });
+  return next;
+}
+function writeErr(e){
+  const c = e && e.code;
+  if (c === "local_quota") return "浏览器空间不够，未保存。请先备份，或减少截图后再试";
+  if (c === "invalid_argument") return "没有写入权限，这个页面只有主人能记";
+  if (c === "quota_exceeded") return "记录数到上限了";
+  if (c === "resource_exhausted") return "点太快了，歇一下再试";
+  return "没存上，网络好一点再试";
+}
+const shotSrc = id => String(id).startsWith("data:") ? id : "/_blob/" + id;
+
+/* ---------------- boot ---------------- */
+async function boot(){
+  bind();
+  $("#say").value = LS.get("fpt2.draft", "");
+  const draft = LS.get("fpt2.quickdraft", null);
+  if (draft && typeof draft === "object") {
+    S.compose.fields = Object.assign(S.compose.fields, draft.fields || {});
+    if (KINDS[draft.kind]) { S.compose.kind = draft.kind; S.compose.kindLocked = !!draft.kindLocked; }
+    if (draft.side === "buy" || draft.side === "sell") { S.compose.side = draft.side; S.compose.sideLocked = !!draft.sideLocked; }
+    if (Array.isArray(draft.moods)) { S.compose.moods = draft.moods.filter(m => MOODS.includes(m)); S.compose.moodsLocked = !!draft.moodsLocked; }
+  }
+  onType();
+  const c = window.claude;
+  if (!c || typeof c.use !== "function") { goLocal("file"); return; }
+  setSync("连接中", false);
+  renderAll();
+  let db = null, assets = null, sample = null, downloads = null;
+  try { [db, assets, sample, downloads] = await Promise.all([c.use("db"), c.use("assets"), c.use("sample"), c.use("downloads")]); } catch(e) {}
+  S.assets = assets; S.sample = sample; S.downloads = downloads;
+  if (sample) { try { S.limits = await sample.limits(); } catch(e) { S.limits = null; } }
+  if (db) { S.db = db; S.mode = "cloud"; setSync("云端同步", true); subscribe(); }
+  else goLocal("nodb");
+  renderAll();
+}
+function goLocal(why){
+  S.mode = "local"; Local.load();
+  const b = $("#banner");
+  b.hidden = false;
+  b.textContent = why === "file"
+    ? "记录和截图只保存在当前浏览器。建议定期从设置导出 JSON 备份；这里的 Claude 分析暂不可用。"
+    : "云端存储这次没连上，先存在这台设备上。刷新页面可以重连。";
+  setSync("仅本机", false);
+  Local.emit();
+}
+function setSync(t, ok){ $("#sync").innerHTML = '<i class="dot' + (ok ? " ok" : "") + '"></i><span>' + esc(t) + "</span>"; }
+function subscribe(){
+  S.db.collection("entries").orderBy("createdAt", "desc").limit(1000).onSnapshot(snap => {
+    S.entries = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    S.loaded = true; renderAll();
+  }, () => { setSync("同步断开", false); toast("同步断开了，刷新页面重连"); });
+  S.db.collection("reviews").orderBy("createdAt", "desc").limit(30).onSnapshot(snap => {
+    S.reviews = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    if (S.tab === "review") renderReview();
+  }, () => {});
+}
+
+/* ---------------- derived ---------------- */
+const find = id => S.entries.find(e => e.id === id);
+function composeParsed(){
+  const p = Object.assign({}, S.cp);
+  const f = S.compose.fields || {};
+  if (String(f.ticker || "").trim()) {
+    p.ticker = normTicker(String(f.ticker).trim());
+    p.name = null;
+    p.market = marketOf(p.ticker);
+  }
+  for (const k of ["price", "stop", "target"]) {
+    if (String(f[k] == null ? "" : f[k]).trim()) p[k] = num(f[k]);
+  }
+  if (S.compose.side) p.side = S.compose.side;
+  return p;
+}
+const isBuyLike = e => e.kind !== "pass" && e.side !== "sell";
+const needsOutcome = e => e.kind === "pass" || e.side !== "sell";
+const settledBuy = e => isBuyLike(e) && e.outcome && ["win","loss","flat"].includes(e.outcome.result);
+function needsReview(e, now){
+  if (!needsOutcome(e) || now - e.createdAt < 3 * DAY) return false;
+  if (!e.outcome) return true;
+  return e.outcome.result === "open" && now - (e.outcome.at || e.createdAt) > 5 * DAY;
+}
+function moveNos(){ const m = new Map(); [...S.entries].sort((a, b) => a.createdAt - b.createdAt).forEach((e, i) => m.set(e.id, i + 1)); return m; }
+function sideLabel(e){
+  if (e.kind === "pass") return e.side === "sell" ? "没卖" : "没买";
+  return e.side === "sell" ? "卖" : e.side === "buy" ? "买" : "";
+}
+const OUT_LBL = { win: "赚了", loss: "亏了", flat: "打平", open: "还拿着", up: "后来涨了", down: "后来跌了" };
+function outLabel(e){ const r = e.outcome && e.outcome.result; if (!r) return ""; if (e.kind === "pass" && r === "flat") return "没怎么动"; return OUT_LBL[r] || r; }
+function judge(e){
+  if (e.kind !== "pass" || !e.outcome) return null;
+  const r = e.outcome.result, held = e.side === "sell";
+  if (r === "flat") return { t: "差不多", ok: null };
+  if (!held) return r === "down" ? { t: "躲过了", ok: true } : { t: "错过了", ok: false };
+  return r === "up" ? { t: "拿对了", ok: true } : { t: "该卖没卖", ok: false };
+}
+function risk(e){
+  if (!isNum(e.price) || !isNum(e.stop) || e.price <= 0 || e.side === "sell") return null;
+  const r = (e.stop - e.price) / e.price * 100;
+  const o = { pct: r };
+  if (Math.abs(r) > 0.05) o.size = Math.min(100, 1 / Math.abs(r) * 100);
+  if (isNum(e.target) && e.price !== e.stop) o.rr = (e.target - e.price) / (e.price - e.stop);
+  return o;
+}
+function metaHTML(e){
+  const p = [];
+  if (isNum(e.price)) p.push("@" + fmt(e.price));
+  const rk = risk(e);
+  if (isNum(e.stop)) p.push("止损 " + fmt(e.stop) + (rk ? "（" + fmtPct(rk.pct) + "）" : ""));
+  if (isNum(e.target)) p.push("目标 " + fmt(e.target) + (rk && isNum(rk.rr) && rk.rr > 0 ? " · 盈亏比 " + (+rk.rr.toFixed(1)) : ""));
+  if (rk && rk.size) p.push("1%风险≈仓位 " + Math.round(rk.size) + "%");
+  if (isNum(e.qty)) p.push(fmt(e.qty) + " 股");
+  if (isNum(e.pct) && e.side === "sell") p.push(fmtPct(e.pct));
+  return p.map(x => "<span>" + esc(x) + "</span>").join("");
+}
+const VERDICTS = ["符合规则","等突破","等回踩","不符合","看不清"];
+const verdictOf = t => { const m = String(t || "").match(/结论[:：]\s*\**\s*(符合规则|等突破|等回踩|不符合|看不清)/); return m ? m[1] : null; };
+const verdictCls = v => v === "符合规则" ? "v-ok" : (v === "等突破" || v === "等回踩") ? "v-wait" : "v-no";
+const stripVerdict = t => String(t || "").replace(/^[^\n]*结论[:：][^\n]*\n?/, "").trim();
+function md(t){
+  const lines = esc(t).split("\n"); let h = "", ul = false;
+  for (let l of lines) {
+    l = l.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    const m = l.match(/^\s*(?:[-*•]|\d+[.、)])\s+(.*)$/);
+    if (m) { if (!ul) { h += "<ul>"; ul = true; } h += "<li>" + m[1] + "</li>"; continue; }
+    if (ul) { h += "</ul>"; ul = false; }
+    if (!l.trim()) continue;
+    h += /^#{1,4}\s/.test(l) ? "<h4>" + l.replace(/^#{1,4}\s/, "") + "</h4>" : "<p>" + l + "</p>";
+  }
+  return h + (ul ? "</ul>" : "");
+}
+
+/* ---------------- render: rows ---------------- */
+function resPill(e){
+  const o = e.outcome; if (!o) return "";
+  const r = o.result;
+  const cls = (r === "win" || r === "up") ? "pos" : (r === "loss" || r === "down") ? "neg" : "neu";
+  return '<span class="res ' + cls + '">' + esc(outLabel(e)) + (isNum(o.pct) ? " " + fmtPct(o.pct) : "") + "</span>";
+}
+function outcomeHTML(e){
+  if (!needsOutcome(e)) return "";
+  const o = e.outcome;
+  let h;
+  if (!o || o.result === "open") {
+    const opts = e.kind === "pass" ? [["up","后来涨了"],["down","后来跌了"],["flat","没怎么动"]] : [["win","赚了"],["loss","亏了"],["flat","打平"],["open","还拿着"]];
+    h = '<div class="out"><span class="q">' + (o ? "还拿着，现在呢？" : (e.kind === "pass" ? "后来呢？" : "结果？")) + "</span>" +
+      opts.filter(x => !(o && x[0] === "open")).map(([r, l]) => '<button class="ob" data-act="settle" data-id="' + e.id + '" data-r="' + r + '">' + l + "</button>").join("") + "</div>";
+  } else {
+    const j = judge(e);
+    h = '<div class="out">' + resPill(e) + (j ? '<span class="judge">' + j.t + "</span>" : "") +
+      (e.lesson ? '<span class="lesson">「' + esc(e.lesson) + "」</span>" : "") + "</div>";
+  }
+  if (S.justSettled === e.id && o && o.result !== "open") {
+    h += '<div class="note-in"><input class="inp" id="n-pct" inputmode="decimal" placeholder="涨跌 %" value="' + (isNum(o.pct) ? Math.abs(o.pct) : "") + '" aria-label="涨跌百分比">' +
+      '<input class="inp" id="n-lesson" placeholder="一句话心得，可不填" value="' + esc(e.lesson || "") + '" aria-label="心得">' +
+      '<button class="ob" data-act="note-done" data-id="' + e.id + '">好</button></div>';
+  }
+  return h;
+}
+function chartHTML(e){
+  const run = S.chartRun && S.chartRun.target === e.id ? S.chartRun : null;
+  if (run) return '<div class="chart" id="ch-' + e.id + '">' + chartRunInner(run) + "</div>";
+  if (e.chart && e.chart.text) {
+    const v = e.chart.verdict;
+    return '<details class="chart"><summary><span class="chart-h">Claude 看图</span>' + (v ? '<span class="verdict ' + verdictCls(v) + '">' + v + "</span>" : "") +
+      '<span class="chart-h" style="margin-left:auto">展开</span></summary><div class="md">' + md(stripVerdict(e.chart.text)) + "</div></details>";
+  }
+  if ((e.shots || []).length && canChart()) return '<button class="linkbtn" data-act="chart-row" data-id="' + e.id + '">按我的规则看这张图</button>';
+  return "";
+}
+function chartRunInner(run){
+  return '<div class="chart-h">Claude 在看图<span class="grow"></span><button class="linkbtn" data-act="chart-stop">停</button></div>' +
+    (run.text ? '<div class="md">' + md(stripVerdict(run.text)) + "</div>" : '<div class="thinking">看图中，大概半分钟…</div>');
+}
+function rowHTML(e, no, ex){
+  const k = KINDS[e.kind] ? e.kind : "trade";
+  const sl = sideLabel(e);
+  const tk = e.ticker ? (ex ? '<span class="tk">' + esc(e.ticker) + "</span>" : '<button class="tk" data-act="tk" data-tk="' + esc(e.ticker) + '">' + esc(e.ticker) + "</button>") + (e.name ? '<span class="nm">' + esc(e.name) + "</span>" : "") : "";
+  const tags = (e.moods || []).map(m => '<span class="tag' + (RISKY.has(m) ? " risky" : "") + '">' + esc(m) + "</span>")
+    .concat((e.reasons || []).map(r => '<span class="tag">' + esc(r) + "</span>"));
+  const shots = (e.shots || []).map(id => '<button class="thumb" data-act="lb" data-src="' + esc(shotSrc(id)) + '" aria-label="看大图"><img src="' + esc(shotSrc(id)) + '" alt="K线截图" loading="lazy"></button>').join("");
+  const meta = metaHTML(e);
+  return '<article class="row' + (ex ? " example" : "") + '"' + (ex ? "" : ' data-act="open" data-id="' + e.id + '"') + ">" +
+    '<div class="row-top"><span class="stone ' + k + '"></span><span>' + KINDS[k] + (sl ? "·" + sl : "") + "</span>" + tk +
+    (S.aiBusy.has(e.id) ? '<span class="busy">整理中…</span>' : "") + (ex ? '<span class="ex">示例</span>' : "") +
+    '<span class="no">第 ' + no + " 手 · " + fmtTime(e.createdAt) + "</span></div>" +
+    (e.text ? '<p class="txt">' + esc(e.text) + "</p>" : "") +
+    (meta ? '<div class="meta">' + meta + "</div>" : "") +
+    (tags.length ? '<div class="tags">' + tags.join("") + "</div>" : "") +
+    (shots ? '<div class="thumbs">' + shots + "</div>" : "") +
+    (ex ? "" : chartHTML(e)) + (ex ? "" : outcomeHTML(e)) + "</article>";
+}
+const EXAMPLES = [
+  { id: "x1", kind: "trade", side: "buy", ticker: "ALAB", text: "ALAB 放量突破 341 买了一半，止损 318，有点怕踏空", price: 341, stop: 318, moods: ["FOMO"], reasons: ["突破"], createdAt: Date.now() - 2 * 3600e3 },
+  { id: "x2", kind: "pass", side: "buy", ticker: "MRVL", text: "MRVL 离50日线太远，忍住没追，等回踩", moods: ["平静"], reasons: ["位置太高"], createdAt: Date.now() - 26 * 3600e3 },
+  { id: "x3", kind: "paper", side: "buy", ticker: "MU", text: "模拟买 MU 1080，存储周期后段，看两周后怎样", price: 1080, moods: [], reasons: ["基本面"], createdAt: Date.now() - 50 * 3600e3 }
+];
+
+/* ---------------- render: pages ---------------- */
+function keepInputs(ids){ const o = {}; const act = document.activeElement; for (const id of ids) { const el = document.getElementById(id); if (el) o[id] = { v: el.value, f: act === el, s: el.selectionStart }; } return o; }
+function restoreInputs(o){ for (const id in o) { const el = document.getElementById(id); if (!el) continue; el.value = o[id].v; if (o[id].f) { el.focus(); try { el.setSelectionRange(o[id].s, o[id].s); } catch(e) {} } } }
+
+function renderAll(){
+  const keep = keepInputs(["n-pct", "n-lesson"]);
+  for (const t of ["log", "list", "review"]) {
+    $("#p-" + t).hidden = S.tab !== t;
+    const b = document.querySelector('.tab[data-t="' + t + '"]'); b.setAttribute("aria-selected", String(S.tab === t));
+  }
+  const now = Date.now();
+  const q = S.entries.filter(e => needsReview(e, now));
+  const badge = $("#badge"); badge.hidden = !q.length; badge.textContent = q.length;
+  renderComposeBits();
+  if (S.tab === "log") renderLog(q);
+  if (S.tab === "list") renderList(now);
+  if (S.tab === "review") renderReview();
+  restoreInputs(keep);
+}
+function renderLog(q){
+  const nos = moveNos();
+  const qs = $("#queue-sec");
+  qs.hidden = !q.length;
+  if (q.length) {
+    const shown = [...q].sort((a, b) => a.createdAt - b.createdAt).slice(0, 3);
+    $("#queue-sub").textContent = q.length > 3 ? "共 " + q.length + " 手，先点这 3 个" : "点一下就算回看过";
+    $("#queue-more").hidden = q.length <= 3;
+    $("#queue").innerHTML = shown.map(e => rowHTML(e, nos.get(e.id))).join("");
+  }
+  const rec = $("#recent");
+  if (!S.loaded) { rec.innerHTML = '<div class="empty">读取记录中…</div>'; return; }
+  if (!S.entries.length) { rec.innerHTML = EXAMPLES.map((e, i) => rowHTML(e, 3 - i, true)).join(""); return; }
+  const qids = new Set(q.slice(0, 3).map(e => e.id));
+  const list = S.entries.filter(e => !qids.has(e.id)).slice(0, 8);
+  rec.innerHTML = list.length ? list.map(e => rowHTML(e, nos.get(e.id))).join("") : '<div class="empty">上面那几手就是全部了</div>';
+}
+function renderList(now){
+  const search = $("#list-search"); if (search && document.activeElement !== search && search.value !== S.query) search.value = S.query;
+  const F = [["all","全部"],["trade","交易"],["pass","不交易"],["paper","模拟"],["todo","待回看"],["chart","看过图的"]];
+  $("#filters").innerHTML = F.map(([k, l]) => '<button class="chip" data-act="filter" data-f="' + k + '" aria-pressed="' + (S.filter === k) + '">' + l + "</button>").join("") +
+    (S.tk ? '<button class="chip" data-act="clear-tk" aria-pressed="true">' + esc(S.tk) + " ×</button>" : "");
+  let list = S.entries;
+  const q = S.query.trim().toLowerCase();
+  if (q) list = list.filter(e => [e.ticker, e.name, e.text, e.lesson, ...(e.moods || []), ...(e.reasons || [])].filter(Boolean).join(" ").toLowerCase().includes(q));
+  if (S.tk) list = list.filter(e => e.ticker === S.tk);
+  if (S.filter === "todo") list = list.filter(e => needsOutcome(e) && (!e.outcome || e.outcome.result === "open"));
+  else if (S.filter === "chart") list = list.filter(e => e.chart && e.chart.verdict);
+  else if (S.filter !== "all") list = list.filter(e => e.kind === S.filter);
+  const el = $("#all");
+  if (!S.loaded) { el.innerHTML = '<div class="empty">读取记录中…</div>'; return; }
+  if (!list.length) { el.innerHTML = '<div class="list"><div class="empty">' + (S.entries.length ? "这个筛选下没有记录" : "还没有记录，回到「记」写第一句") + "</div></div>"; return; }
+  const nos = moveNos();
+  let h = "", cur = null, open = false;
+  for (const e of list) {
+    const d = dayLabel(e.createdAt);
+    if (d !== cur) { if (open) h += "</div>"; h += '<div class="day">' + d + '</div><div class="list">'; cur = d; open = true; }
+    h += rowHTML(e, nos.get(e.id));
+  }
+  el.innerHTML = h + (open ? "</div>" : "");
+}
+
+/* ---------------- compose ---------------- */
+let draftT;
+function onType(){
+  const ta = $("#say");
+  ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight + 2, window.innerHeight * 0.45) + "px";
+  clearTimeout(draftT); draftT = setTimeout(() => LS.set("fpt2.draft", ta.value), 400);
+  S.cp = parse(ta.value);
+  if (!S.compose.kindLocked) S.compose.kind = S.cp.kind;
+  if (!S.compose.sideLocked) S.compose.side = S.cp.side;
+  if (!S.compose.moodsLocked) S.compose.moods = S.cp.moods.slice();
+  persistComposeDraft();
+  renderComposeBits();
+}
+function persistComposeDraft(){
+  LS.set("fpt2.quickdraft", {
+    fields: S.compose.fields, kind: S.compose.kind, kindLocked: S.compose.kindLocked,
+    side: S.compose.side, sideLocked: S.compose.sideLocked,
+    moods: S.compose.moods, moodsLocked: S.compose.moodsLocked
+  });
+}
+function canChart(){ return !!(S.sample && S.limits && S.limits.images); }
+function renderComposeBits(){
+  const C = S.compose, p = composeParsed(), text = $("#say").value.trim();
+  document.querySelectorAll("#c-kinds .kind").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === C.kind)));
+  const sides = C.kind === "pass" ? [["buy", "没买"], ["sell", "没卖"]] : [["buy", "买入"], ["sell", "卖出"]];
+  $("#c-side").innerHTML = '<span class="lbl">动作</span>' + sides.map(([k, l]) => '<button class="chip" data-act="side" data-s="' + k + '" aria-pressed="' + (C.side === k) + '">' + l + "</button>").join("");
+  const f = C.fields || {};
+  for (const k of ["ticker", "price", "stop", "target"]) { const el = $("#c-" + k); if (el && document.activeElement !== el && el.value !== String(f[k] || "")) el.value = f[k] || ""; }
+  $("#c-moods").innerHTML = '<span class="lbl">心情</span>' + MOODS.map(m => '<button class="chip' + (RISKY.has(m) ? " risky" : "") + '" data-act="mood" data-m="' + m + '" aria-pressed="' + C.moods.includes(m) + '">' + m + "</button>").join("");
+  // preview
+  const e = Object.assign({}, p, { kind: C.kind, side: C.side || p.side });
+  if (C.kind === "pass" && !e.side) e.side = "buy";
+  if (C.kind !== "pass" && p.kind === "pass" && !C.sideLocked) e.side = null;
+  const parts = [];
+  parts.push('<span><span class="stone ' + C.kind + '" style="vertical-align:-1px;margin-right:6px"></span>' + KINDS[C.kind] + (sideLabel(e) ? "·" + sideLabel(e) : "") + "</span>");
+  if (p.ticker) parts.push('<b class="mono">' + esc(p.ticker) + "</b>" + (p.name ? '<span class="dim">' + esc(p.name) + "</span>" : ""));
+  const meta = metaHTML(e);
+  if (meta) parts.push('<span class="mono" style="display:contents">' + meta + "</span>");
+  if (p.reasons.length) parts.push("<span>" + p.reasons.map(esc).join(" · ") + "</span>");
+  if (!text) parts.length = 0;
+  $("#c-parse").innerHTML = parts.length ? parts.join("") : '<span class="dim">标的、价格、止损、为什么、什么心情，能写几样写几样。</span>';
+  // warnings, all from his own records
+  const w = [];
+  if (text && C.kind !== "pass" && e.side !== "sell" && !isNum(p.stop)) w.push("还没写止损");
+  const rk = risk(e);
+  if (rk && Math.abs(rk.pct) > 10) w.push("止损幅度 " + Math.abs(rk.pct).toFixed(1) + "%，超过你定的 7–8%");
+  for (const m of C.moods) {
+    if (!RISKY.has(m)) continue;
+    const hist = S.entries.filter(x => settledBuy(x) && (x.moods || []).includes(m));
+    if (hist.length >= 3) {
+      const wn = hist.filter(x => x.outcome.result === "win").length, ls = hist.filter(x => x.outcome.result === "loss").length;
+      const ps = hist.map(x => x.outcome.pct).filter(isNum);
+      w.push("带着「" + m + "」的 " + hist.length + " 手：赚 " + wn + " · 亏 " + ls + (ps.length ? " · 平均 " + fmtPct(ps.reduce((a, b) => a + b, 0) / ps.length) : ""));
+    }
+  }
+  if (p.ticker) {
+    const nos = moveNos();
+    const recent = S.entries.find(x => x.ticker === p.ticker && x.outcome && x.outcome.result === "loss" && Date.now() - (x.outcome.at || x.createdAt) < 5 * DAY);
+    if (recent) w.push(p.ticker + " 5 天内刚亏过一手（第 " + nos.get(recent.id) + " 手）");
+  }
+  $("#c-warns").innerHTML = w.map(x => '<div class="warn">' + esc(x) + "</div>").join("");
+  // shots
+  const th = $("#c-thumbs");
+  th.hidden = !C.shots.length;
+  th.innerHTML = C.shots.map(s => '<div class="thumb"><img src="' + s.url + '" alt="待存的截图">' +
+    (s.status === "up" ? '<span class="st">上传中</span>' : s.status === "err" ? '<span class="st">没传上</span>' : "") +
+    '<button class="x" data-act="rm-shot" data-key="' + s.key + '" aria-label="去掉这张">×</button></div>').join("");
+  $("#c-shot-btn").hidden = S.mode === "cloud" && !S.assets;
+  $("#c-hint").hidden = C.shots.length > 0;
+  const cb = $("#c-chart-btn");
+  cb.hidden = !(canChart() && C.shots.some(s => s.blob));
+  cb.disabled = !!S.chartRun;
+  renderComposeChart();
+  $("#c-save").disabled = !text && !C.shots.length;
+}
+function renderComposeChart(){
+  const box = $("#c-chart"), C = S.compose;
+  const run = S.chartRun && S.chartRun.target === "compose" ? S.chartRun : null;
+  if (run) { box.hidden = false; box.className = "chart"; box.innerHTML = chartRunInner(run); return; }
+  if (C.chart) {
+    const v = C.chart.verdict;
+    box.hidden = false; box.className = "chart";
+    box.innerHTML = '<div class="chart-h">Claude 看图' + (v ? '<span class="verdict ' + verdictCls(v) + '">' + v + "</span>" : "") +
+      '<span class="grow"></span><button class="linkbtn" data-act="chart-drop">不要这段</button></div><div class="md">' + md(stripVerdict(C.chart.text)) + "</div>" +
+      '<div class="small" style="margin:0">存下后会跟着这一手，之后回看时统计它准不准。</div>';
+    return;
+  }
+  box.hidden = true; box.innerHTML = "";
+}
+
+async function compress(file){
+  try {
+    const bmp = await createImageBitmap(file);
+    const MAX = 1800, sc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+    if (sc === 1 && file.size < 700 * 1024 && /^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    return await new Promise(r => c.toBlob(b => r(b || file), "image/jpeg", 0.86));
+  } catch(e) { return file; }
+}
+const toDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+function assetErr(e){
+  const c = e && e.code;
+  if (c === "too_large") return "图太大了，换张截图";
+  if (c === "unsupported_type") return "这个格式传不上去，换成截图或 JPG";
+  if (c === "quota_or_state") return "截图空间满了";
+  if (c === "rate_limited") return "传太快了，歇一下";
+  return "截图没传上，再试一次";
+}
+async function uploadBlob(blob){
+  if (S.mode === "cloud") {
+    if (!S.assets) throw { code: "not_granted" };
+    const r = await S.assets.upload(blob, blob.type ? { type: blob.type } : undefined);
+    return r.id;
+  }
+  return await toDataURL(blob);
+}
+async function addShots(files, into){
+  for (const f of files) {
+    if (!f || !/^image\//.test(f.type || "image/")) continue;
+    const blob = await compress(f);
+    const s = { key: Math.random().toString(36).slice(2), blob, url: URL.createObjectURL(blob), id: null, status: "up" };
+    into.push(s); renderComposeBits(); if (S.edit) renderEditShots();
+    try { s.id = await uploadBlob(blob); s.status = "ok"; } catch(e) { s.status = "err"; toast(assetErr(e)); }
+    renderComposeBits(); if (S.edit) renderEditShots();
+  }
+}
+function resetCompose(){
+  const C = S.compose;
+  C.shots.forEach(s => URL.revokeObjectURL(s.url));
+  S.compose = { kind: "trade", kindLocked: false, side: null, sideLocked: false, moods: [], moodsLocked: false, fields: { ticker: "", price: "", stop: "", target: "" }, shots: [], chart: null };
+  $("#say").value = ""; LS.set("fpt2.draft", ""); LS.set("fpt2.quickdraft", null);
+  onType();
+}
+
+async function save(){
+  const C = S.compose, text = $("#say").value.trim(), typed = composeParsed();
+  if (!text && !C.shots.length) return;
+  if (C.shots.some(s => s.status === "up")) { toast("截图还在上传，等一两秒"); return; }
+  if (S.chartRun && S.chartRun.target === "compose") { toast("Claude 还在看图，看完再存"); return; }
+  const p = typed;
+  const kind = C.kind;
+  let side = p.side;
+  if (kind === "pass" && !side) side = "buy";
+  if (kind !== "pass" && p.kind === "pass" && !C.sideLocked) side = null;
+  const locked = [];
+  if (C.kindLocked) locked.push("kind");
+  if (C.sideLocked) locked.push("side");
+  for (const k of ["ticker", "price", "stop", "target"]) {
+    if (String(C.fields[k] == null ? "" : C.fields[k]).trim()) locked.push(k);
+  }
+  if (locked.includes("ticker")) locked.push("name", "market");
+  if (C.moodsLocked) locked.push("moods");
+  const blobs = C.shots.filter(s => s.status === "ok").map(s => s.blob);
+  const aiOn = !!(S.sample && S.aiOn && (text || (blobs.length && canChart())));
+  const entry = {
+    text, kind, side, ticker: p.ticker, name: p.name, market: p.market,
+    price: p.price, stop: p.stop, target: p.target, qty: p.qty, pct: p.pct,
+    moods: C.moods.slice(), reasons: p.reasons.slice(),
+    shots: C.shots.filter(s => s.status === "ok").map(s => s.id),
+    createdAt: Date.now(), ai: aiOn ? "pending" : "off", locked, outcome: null, lesson: "",
+    chart: C.chart ? { verdict: C.chart.verdict, text: C.chart.text, at: C.chart.at } : null
+  };
+  const id = newId();
+  const btn = $("#c-save"); btn.disabled = true; btn.textContent = "记下中…";
+  try { await queued(id, () => Store.set(id, entry)); }
+  catch(e) { toast(writeErr(e)); btn.disabled = false; btn.textContent = "记下这一手"; return; }
+  btn.textContent = "记下这一手";
+  const no = moveNos().get(id) || S.entries.length + 1;
+  const keepBlobs = blobs.slice();
+  resetCompose();
+  toast("记下了 · 第 " + no + " 手");
+  let final = Object.assign({ id }, entry);
+  if (aiOn) final = await aiRefine(id, final, keepBlobs);
+  await pairSell(final);
+}
+
+/* ---------------- Claude: tidy one sentence ---------------- */
+function parsePrompt(text, hasImg){
+  return "你是交易日志的解析器。用户用一句中文随手记下一次交易决定" + (hasImg ? "，并附了K线或下单截图" : "") + "。把它整理成一个 JSON 对象。今天是 " + todayStr() + "。\n" +
+    "字段：\n" +
+    '- kind: "trade"（真实买卖）| "pass"（看了但决定不操作：没买/没卖/观望/忍住）| "paper"（模拟、假设的买卖）\n' +
+    '- side: "buy" | "sell" | null。kind 为 pass 时，没买/没追/观望填 "buy"，没卖/继续拿填 "sell"\n' +
+    '- ticker: 美股用大写代码如 "ALAB"；港股用 "0700.HK"；A股用 "600519.SH" 或 "002028.SZ"。中文公司名换成代码，不确定填 null\n' +
+    "- name: 公司中文简称，不知道填 null\n" +
+    "- price: 这次买入、卖出或观察时的价格，数字或 null\n" +
+    "- stop: 止损价，数字或 null\n" +
+    "- target: 目标价，数字或 null\n" +
+    "- qty: 股数，数字或 null\n" +
+    "- pct: 这次卖出的盈亏百分比（如 25 或 -8），只有卖出且写了才填，否则 null\n" +
+    "- moods: 从 " + JSON.stringify(MOODS) + " 里选 0 到 2 个，只选句子里看得出来的\n" +
+    "- reasons: 从 " + JSON.stringify(REASONS) + " 里选 0 到 3 个，也可以自拟不超过 4 个字的标签\n" +
+    "只根据句子" + (hasImg ? "和截图" : "") + "里真实出现的信息填写，看不出来就填 null 或空数组，不要编造价格。只回复这个 JSON 对象。\n\n" +
+    "句子：" + (text || "（没写字，只有截图）");
+}
+function killSample(e){
+  if (e && ["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)) { S.sample = null; renderAll(); return true; }
+  return false;
+}
+async function aiRefine(id, base, blobs){
+  S.aiBusy.add(id); renderAll();
+  let r = null;
+  try {
+    const opts = { modelTier: "quick" };
+    const withImg = blobs.length && canChart();
+    if (withImg) opts.images = blobs.slice(0, (S.limits.images.maxCount || 1));
+    r = await S.sample.json(parsePrompt(base.text, !!withImg), opts);
+  } catch(e) { killSample(e); }
+  S.aiBusy.delete(id);
+  const cur = find(id) || base;
+  if (cur.ai !== "pending") { renderAll(); return cur; }
+  const patch = { ai: r ? "done" : "error" };
+  if (r && typeof r === "object" && !Array.isArray(r)) {
+    const lock = new Set(cur.locked || []);
+    const put = (k, v) => { if (!lock.has(k) && v !== null && v !== undefined && v !== "") patch[k] = v; };
+    if (KINDS[r.kind]) put("kind", r.kind);
+    if (r.side === "buy" || r.side === "sell") put("side", r.side);
+    if (typeof r.ticker === "string" && r.ticker.trim()) { const tk = normTicker(r.ticker); put("ticker", tk); put("market", marketOf(tk)); }
+    if (typeof r.name === "string" && r.name.trim() && r.name.length <= 12) put("name", r.name.trim());
+    for (const k of ["price","stop","target","qty","pct"]) { const v = num(r[k]); if (v !== null) put(k, v); }
+    if (!lock.has("moods") && Array.isArray(r.moods)) patch.moods = [...new Set([...(cur.moods || []), ...r.moods.filter(m => MOODS.includes(m))])].slice(0, 3);
+    if (Array.isArray(r.reasons)) patch.reasons = [...new Set([...(cur.reasons || []), ...r.reasons.filter(x => typeof x === "string" && x.trim() && x.length <= 6).map(x => x.trim())])].slice(0, 4);
+  }
+  try { await queued(id, () => Store.update(id, patch)); } catch(e) {}
+  renderAll();
+  return Object.assign({}, cur, patch);
+}
+
+/* ---------------- auto-settle a buy when its sell is logged ---------------- */
+function openBuyFor(e, pool){
+  return pool.filter(x => x.id !== e.id && x.ticker === e.ticker && x.kind === e.kind && isBuyLike(x) && x.createdAt < e.createdAt && (!x.outcome || x.outcome.result === "open"))
+    .sort((a, b) => b.createdAt - a.createdAt)[0] || null;
+}
+function sellOutcome(sell, buy){
+  let pct = isNum(sell.pct) ? sell.pct : (isNum(sell.price) && isNum(buy.price) && buy.price > 0 ? +((sell.price - buy.price) / buy.price * 100).toFixed(2) : null);
+  let result = pct === null ? (/止损/.test(sell.text || "") ? "loss" : /止盈/.test(sell.text || "") ? "win" : null) : (pct > 0.5 ? "win" : pct < -0.5 ? "loss" : "flat");
+  return result ? { result, pct, at: sell.createdAt, by: sell.id } : null;
+}
+async function pairSell(e){
+  if (!e || e.kind === "pass" || e.side !== "sell" || !e.ticker) return;
+  const buy = openBuyFor(e, S.entries);
+  if (!buy) return;
+  const out = sellOutcome(e, buy);
+  if (!out) return;
+  try { await queued(buy.id, () => Store.update(buy.id, { outcome: out })); toast("第 " + moveNos().get(buy.id) + " 手 " + buy.ticker + " 自动结算：" + (OUT_LBL[out.result]) + (isNum(out.pct) ? " " + fmtPct(out.pct) : "")); } catch(err) {}
+}
+
+/* ---------------- settle / notes ---------------- */
+async function settle(id, r){
+  const e = find(id); if (!e) return;
+  const out = { result: r, at: Date.now() };
+  S.justSettled = r === "open" ? null : id;
+  try { await queued(id, () => Store.update(id, { outcome: e.outcome ? out : Object.assign({ pct: null }, out) })); }
+  catch(err) { toast(writeErr(err)); }
+  renderAll();
+  if (r !== "open") { const el = document.getElementById("n-pct"); if (el && window.matchMedia("(hover:hover)").matches) el.focus(); }
+}
+async function noteDone(id){
+  const e = find(id); if (!e || !e.outcome) { S.justSettled = null; renderAll(); return; }
+  let pct = num($("#n-pct") && $("#n-pct").value);
+  const lesson = ($("#n-lesson") && $("#n-lesson").value || "").trim();
+  if (pct !== null) { const neg = ["loss","down"].includes(e.outcome.result); pct = neg ? -Math.abs(pct) : ["win","up"].includes(e.outcome.result) ? Math.abs(pct) : pct; }
+  S.justSettled = null;
+  const patch = { lesson };
+  if (pct !== null) patch.outcome = { pct };
+  try { await queued(id, () => Store.update(id, patch)); } catch(err) { toast(writeErr(err)); }
+  renderAll();
+}
+
+/* ---------------- Claude: read a chart by his own rules ---------------- */
+const RULES_TXT = "请在设置中填写你的交易规则。";
+function rulesText(){
+  const saved = S.mode === "local" ? Local.data.rules : LS.get("fpt2.rules", null);
+  return typeof saved === "string" ? saved : RULES_TXT;
+}
+function saveRules(){
+  const value = $("#settings-rules").value.trim();
+  try {
+    if (S.mode === "local") { Local.save(Object.assign({}, Local.data, { rules: value })); Local.emit(); }
+    else if (!LS.set("fpt2.rules", value)) throw { code: "local_quota" };
+    toast("交易规则已保存");
+  } catch (error) { toast(writeErr(error)); }
+}
+function chartPrompt(text){
+  return "你在帮一位交易者按他自己写下的规则检查K线截图。你不是在预测股价，也看不到实时行情、财报日期和基本面，只能看截图。读不清的数字就说读不清，不要猜。\n\n" +
+    "他的规则：\n" + rulesText() + "\n\n" +
+    (text ? "他写的：" + text + "\n\n" : "") +
+    "按下面格式回答，中文，不超过 300 字：\n" +
+    "第一行只写其中一个：结论：符合规则 / 结论：等突破 / 结论：等回踩 / 结论：不符合 / 结论：看不清\n" +
+    "**图上看到的**：周期、趋势、关键价位、均线位置、量能（只写看得见的）\n" +
+    "**按规则过一遍**：每条写 符合 / 不符合 / 看不出\n" +
+    "**如果要做**：更好的买点（价位或区间）、止损放哪、止损幅度、按 1% 风险的仓位\n" +
+    "**什么情况说明看错了**：一句话\n" +
+    "不要说“建议买入/卖出”，只说符不符合他的规则。";
+}
+function sampleErr(e){
+  const c = e && e.code;
+  if (c === "rate_limited") return "Claude 这会儿用得太多，过一会儿再点";
+  if (c === "session_expired") return "登录过期了，重新登录 Claude 再试";
+  if (c === "image_rejected") return "这张图 Claude 读不了，换一张";
+  if (c === "refused") return "Claude 没接这个问题，换个说法";
+  if (c === "not_granted") return "没允许这个页面用 Claude，看图和整理先关掉了";
+  return "Claude 这次没答完，再点一次";
+}
+function paintChartSlot(){
+  const run = S.chartRun; if (!run) return;
+  if (run.target === "compose") renderComposeChart();
+  else { const el = document.getElementById("ch-" + run.target); if (el) el.innerHTML = chartRunInner(run); }
+}
+async function runChart(target, blobs, text){
+  if (!canChart()) { toast("这里用不了 Claude 看图"); return; }
+  if (!blobs.length) { toast("先放一张 K 线截图"); return; }
+  if (S.chartRun) S.chartRun.ctl.abort();
+  const ctl = new AbortController();
+  const run = { target, text: "", ctl };
+  S.chartRun = run; renderAll();
+  try {
+    const r = await S.sample(chartPrompt(text), { images: blobs.slice(0, S.limits.images.maxCount || 1), signal: ctl.signal, cache: false,
+      onText: u => { run.text = u.text; paintChartSlot(); } });
+    const res = { verdict: verdictOf(r.text), text: r.text, at: Date.now() };
+    if (target === "compose") S.compose.chart = res;
+    else await queued(target, () => Store.update(target, { chart: res }));
+  } catch(e) {
+    if (e && e.code !== "cancelled" && !killSample(e)) toast(sampleErr(e));
+    else if (e && e.code === "not_granted") toast(sampleErr(e));
+  } finally {
+    if (S.chartRun === run) S.chartRun = null;
+    renderAll();
+  }
+}
+async function blobsOf(ids){
+  const out = [];
+  for (const id of ids || []) { try { const r = await fetch(shotSrc(id)); if (r.ok) out.push(await r.blob()); } catch(e) {} }
+  return out;
+}
+
+/* ---------------- review tab ---------------- */
+function inPeriod(){ const from = S.period ? Date.now() - S.period * DAY : 0; return S.entries.filter(e => e.createdAt >= from); }
+function tally(list){
+  const w = list.filter(e => e.outcome && e.outcome.result === "win").length;
+  const l = list.filter(e => e.outcome && e.outcome.result === "loss").length;
+  const f = list.filter(e => e.outcome && e.outcome.result === "flat").length;
+  const ps = list.map(e => e.outcome && e.outcome.pct).filter(isNum);
+  return { n: w + l + f, w, l, f, avg: ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : null };
+}
+function barHTML(w, l, f){ const t = w + l + f || 1; return '<div class="bar"><i class="w" style="width:' + (w / t * 100) + '%"></i><i class="f" style="width:' + (f / t * 100) + '%"></i><i class="l" style="width:' + (l / t * 100) + '%"></i></div>'; }
+function groupTable(title, keyFn, list, keys){
+  const rows = [];
+  for (const k of keys) {
+    const sub = list.filter(e => keyFn(e).includes(k));
+    if (!sub.length) continue;
+    const t = tally(sub);
+    rows.push({ k, cnt: sub.length, t });
+  }
+  if (!rows.length) return "";
+  rows.sort((a, b) => b.cnt - a.cnt);
+  return '<div class="panel"><div class="sec-h" style="margin:0 0 6px"><h2>' + title + '</h2><span class="sub">只算买入且回看过的</span></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th></th><th class="n">手数</th><th class="n">赚</th><th class="n">亏</th><th class="n">平均</th></tr></thead><tbody>' +
+    rows.map(r => "<tr><td>" + esc(r.k) + '</td><td class="n">' + r.cnt + '</td><td class="n pos-t">' + r.t.w + '</td><td class="n neg-t">' + r.t.l + '</td><td class="n">' + (isNum(r.t.avg) ? fmtPct(r.t.avg) : "—") + "</td></tr>").join("") +
+    "</tbody></table></div></div>";
+}
+function stats(list){
+  const buys = list.filter(isBuyLike);
+  const real = tally(buys.filter(e => e.kind === "trade" && settledBuy(e)));
+  const paper = tally(buys.filter(e => e.kind === "paper" && settledBuy(e)));
+  const passes = list.filter(e => e.kind === "pass" && e.outcome);
+  const pj = passes.map(judge).filter(Boolean);
+  const pass = { n: passes.length, ok: pj.filter(j => j.ok === true).length, bad: pj.filter(j => j.ok === false).length, flat: pj.filter(j => j.ok === null).length };
+  const withStop = buys.filter(e => isNum(e.stop)).length;
+  const needs = list.filter(needsOutcome);
+  const reviewed = needs.filter(e => e.outcome && e.outcome.result !== "open").length;
+  const charts = list.filter(e => e.chart && e.chart.verdict && e.outcome && e.outcome.result !== "open");
+  return { buys, real, paper, pass, withStop, needs: needs.length, reviewed, charts,
+    kinds: { trade: list.filter(e => e.kind === "trade").length, pass: list.filter(e => e.kind === "pass").length, paper: list.filter(e => e.kind === "paper").length } };
+}
+function renderReview(){
+  const P = [[7,"近 7 天"],[30,"近 30 天"],[90,"近 3 个月"],[0,"全部"]];
+  $("#periods").innerHTML = P.map(([k, l]) => '<button class="chip" data-act="period" data-p="' + k + '" aria-pressed="' + (S.period === k) + '">' + l + "</button>").join("");
+  const list = inPeriod();
+  const st = stats(list);
+  let h = "";
+  if (!list.length) {
+    h += '<div class="panel"><p class="lead">这段时间还没有记录。在「记」里写一句，回看时点一下结果，这里就会自动出统计。</p></div>';
+  } else {
+    h += '<div class="panel"><p class="lead">记了 <b>' + list.length + "</b> 手：交易 " + st.kinds.trade + " · 不交易 " + st.kinds.pass + " · 模拟 " + st.kinds.paper +
+      "。需要回看的 " + st.needs + " 手里，回看了 <b>" + st.reviewed + "</b> 手。</p>" +
+      '<div class="cmp" style="margin-top:14px">' +
+      cmpRow("trade", "实盘", st.real) + cmpRow("paper", "模拟", st.paper) +
+      '<div class="cmp-row"><span class="k"><span class="stone pass"></span>不交易</span><span class="v">' +
+        (st.pass.n ? "判断对 " + st.pass.ok + " · 错 " + st.pass.bad + (st.pass.flat ? ' <span class="d">差不多 ' + st.pass.flat + "</span>" : "") : '<span class="d">还没回看过</span>') + "</span>" +
+        (st.pass.n ? barHTML(st.pass.ok, st.pass.bad, st.pass.flat) : "") + "</div>" +
+      "</div>" +
+      '<p class="small">买入时写了止损的：' + st.withStop + " / " + st.buys.length + "。模拟和实盘的胜率差，大致就是执行上丢掉的部分。</p></div>";
+    const settled = st.buys.filter(settledBuy);
+    h += groupTable("心情", e => e.moods || [], settled, MOODS);
+    const rs = [...new Set(settled.flatMap(e => e.reasons || []))];
+    h += groupTable("理由", e => e.reasons || [], settled, rs);
+    if (st.charts.length) {
+      const rows = VERDICTS.map(v => {
+        const sub = st.charts.filter(e => e.chart.verdict === v);
+        if (!sub.length) return "";
+        const up = sub.filter(e => ["win","up"].includes(e.outcome.result)).length, dn = sub.filter(e => ["loss","down"].includes(e.outcome.result)).length;
+        return "<tr><td>" + v + '</td><td class="n">' + sub.length + '</td><td class="n pos-t">' + up + '</td><td class="n neg-t">' + dn + "</td></tr>";
+      }).join("");
+      h += '<div class="panel"><div class="sec-h" style="margin:0 0 6px"><h2>Claude 看图准不准</h2><span class="sub">看过图、也回看过的</span></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>它说</th><th class="n">手数</th><th class="n">后来涨/赚</th><th class="n">后来跌/亏</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+        '<p class="small">样本少的时候别急着信它，也别急着否定它。</p></div>';
+    }
+  }
+  // Claude review
+  const run = S.reviewRun;
+  h += '<div class="panel"><div class="sec-h" style="margin:0 0 4px"><h2>让 Claude 复盘</h2></div>' +
+    '<p class="small" style="margin:0 0 10px">把这段时间的记录交给 Claude，按你的数据找规律，最后只给一条下周要改的规则。</p>' +
+    '<div class="row-btns">' + (run ? '<button class="btn" data-act="review-stop">停</button>' :
+      '<button class="btn accent" data-act="review-run"' + (!S.sample || !list.length ? " disabled" : "") + ">复盘" + (P.find(x => x[0] === S.period) || [0, ""])[1] + "</button>") +
+    (!S.sample ? '<span class="small" style="margin:0">这里用不了 Claude，用下面的「打包」带去对话里</span>' : "") + "</div>" +
+    '<div class="review-out md" id="rv-out">' + (run ? (run.text ? md(run.text) : '<div class="thinking">Claude 在看你的记录，通常半分钟到一分钟…</div>') : "") + "</div>";
+  if (S.reviews.length) {
+    h += '<div class="past">' + S.reviews.slice(0, 8).map((r, i) => "<details" + (i === 0 && !run ? " open" : "") + '><summary>' + fmtTime(r.createdAt) + " · " + esc(r.label || "") + " · " + (r.n || 0) + ' 手</summary><div class="md">' + md(r.text || "") + "</div></details>").join("") + "</div>";
+  }
+  h += "</div>";
+  // export
+  h += '<div class="panel"><div class="sec-h" style="margin:0 0 4px"><h2>打包带走</h2></div>' +
+    '<p class="small" style="margin:0 0 10px">把这段时间的规则、统计和逐手记录整理成一段文字，粘贴给我或任何 AI 都能直接复盘。截图不在里面。</p>' +
+    '<div class="row-btns"><button class="btn" data-act="export-copy"' + (list.length ? "" : " disabled") + ">复制文字</button>" +
+    '<button class="btn" data-act="export-file"' + (list.length ? "" : " disabled") + ">存成文件</button></div>" +
+    '<textarea class="inp" id="export-box" readonly hidden style="margin-top:10px;min-height:160px;font-family:var(--mono);font-size:12px"></textarea>' +
+    '<p class="small">也可以直接在和 Claude 的对话里说「看看我的复盘台」，它能读到这里的全部记录，包括截图。</p></div>';
+  $("#rv").innerHTML = h;
+}
+function cmpRow(k, label, t){
+  return '<div class="cmp-row"><span class="k"><span class="stone ' + k + '"></span>' + label + '</span><span class="v">' +
+    (t.n ? "赚 " + t.w + " · 亏 " + t.l + (t.f ? " · 平 " + t.f : "") + ' <span class="d">胜率 ' + Math.round(t.w / t.n * 100) + "%" + (isNum(t.avg) ? " · 平均 " + fmtPct(t.avg) : "") + "</span>" : '<span class="d">还没回看过</span>') +
+    "</span>" + (t.n ? barHTML(t.w, t.l, t.f) : "") + "</div>";
+}
+function entryLine(e, no){
+  const d = new Date(e.createdAt);
+  const p = ["#" + no, (d.getMonth() + 1) + "/" + d.getDate(), KINDS[e.kind] + (sideLabel(e) ? "·" + sideLabel(e) : "")];
+  if (e.ticker) p.push(e.ticker);
+  if (isNum(e.price)) p.push("@" + fmt(e.price));
+  if (isNum(e.stop)) p.push("止损" + fmt(e.stop));
+  if (isNum(e.target)) p.push("目标" + fmt(e.target));
+  if (isNum(e.qty)) p.push(fmt(e.qty) + "股");
+  if (isNum(e.pct) && e.side === "sell") p.push(fmtPct(e.pct));
+  if ((e.moods || []).length) p.push("心情:" + e.moods.join("/"));
+  if ((e.reasons || []).length) p.push("理由:" + e.reasons.join("/"));
+  if (e.chart && e.chart.verdict) p.push("Claude看图:" + e.chart.verdict);
+  if (e.outcome && e.outcome.result !== "open") { const j = judge(e); p.push("结果:" + outLabel(e) + (isNum(e.outcome.pct) ? " " + fmtPct(e.outcome.pct) : "") + (j ? "(" + j.t + ")" : "")); }
+  else if (e.outcome) p.push("结果:还拿着");
+  else if (needsOutcome(e)) p.push("结果:未回看");
+  if (e.lesson) p.push("心得:" + e.lesson);
+  if (e.backfill) p.push("补录");
+  if (e.text && !e.backfill) p.push("原话:\"" + e.text.slice(0, 160) + "\"");
+  return p.join(" | ");
+}
+function logBlock(list, budget){
+  const nos = moveNos();
+  const asc = [...list].sort((a, b) => a.createdAt - b.createdAt);
+  const lines = []; let used = 0;
+  for (let i = asc.length - 1; i >= 0; i--) { const l = entryLine(asc[i], nos.get(asc[i].id)); if (used + l.length > budget) break; lines.unshift(l); used += l.length + 1; }
+  return { text: lines.join("\n"), n: lines.length, cut: lines.length < asc.length };
+}
+function statsText(list){
+  const st = stats(list), f = t => t.n ? "赚" + t.w + " 亏" + t.l + " 平" + t.f + "，胜率" + Math.round(t.w / t.n * 100) + "%" + (isNum(t.avg) ? "，平均" + fmtPct(t.avg) : "") : "还没回看";
+  return "- 共 " + list.length + " 手：交易 " + st.kinds.trade + "，不交易 " + st.kinds.pass + "，模拟 " + st.kinds.paper + "；需回看 " + st.needs + "，已回看 " + st.reviewed + "\n" +
+    "- 实盘买入：" + f(st.real) + "\n- 模拟买入：" + f(st.paper) + "\n" +
+    "- 不交易：判断对 " + st.pass.ok + "，错 " + st.pass.bad + "，差不多 " + st.pass.flat + "\n" +
+    "- 买入时写了止损：" + st.withStop + " / " + st.buys.length;
+}
+const periodLabel = () => ({ 7: "近 7 天", 30: "近 30 天", 90: "近 3 个月", 0: "全部" })[S.period] || "";
+async function runReview(){
+  if (!S.sample) return;
+  const list = inPeriod(); if (!list.length) return;
+  const lb = logBlock(list, 40000);
+  const prompt = "你在帮一位做美股、港股、A股波段交易的人复盘。下面是他" + periodLabel() + "的交易日志。每行一手，包括真实交易、不交易（看了但没做）、模拟交易，以及他事后回看的结果。\n\n" +
+    "他的规则：\n" + rulesText() + "\n\n自动统计：\n" + statsText(list) + "\n\n" +
+    "要求：\n- 只根据下面的数据说话，每个结论带上具体数字或引用第几手（#编号）。\n- 不做性格或心理诊断，不说教，不讲空泛的“要有纪律”。行为上的解释要标明是假设，并说什么数据能推翻它。\n" +
+    "- 样本少就直说样本少，不要硬下结论。\n- “未回看”的不算输赢。\n- 中文，不超过 350 字。\n\n" +
+    "格式：\n**数据里看到的**（2–4 条）\n**做对的**（1–2 条）\n**下一周只改一件事**（一条具体、能执行的规则）\n\n" +
+    "日志" + (lb.cut ? "（太长，只给了最近 " + lb.n + " 手）" : "") + "：\n" + lb.text;
+  const ctl = new AbortController();
+  const run = { text: "", ctl };
+  S.reviewRun = run; renderReview();
+  try {
+    const r = await S.sample(prompt, { signal: ctl.signal, cache: false, onText: u => { run.text = u.text; const el = $("#rv-out"); if (el) el.innerHTML = md(u.text); } });
+    await Store.addReview({ createdAt: Date.now(), period: S.period, label: periodLabel(), n: list.length, text: r.text }).catch(() => {});
+    S.reviewRun = null;
+    if (S.mode === "cloud") S.reviews = [{ id: "tmp", createdAt: Date.now(), label: periodLabel(), n: list.length, text: r.text }].concat(S.reviews);
+  } catch(e) {
+    S.reviewRun = null;
+    if (e && e.code !== "cancelled" && !killSample(e)) toast(sampleErr(e));
+  }
+  renderReview();
+}
+function exportText(){
+  const list = inPeriod();
+  const lb = logBlock(list, 200000);
+  return "请根据下面我的交易日志帮我复盘：找出重复出现的模式，每个结论引用具体编号（#），不要说教，最后给一条下周要改的规则。\n\n" +
+    "# 复盘台导出 · " + periodLabel() + " · " + todayStr() + "\n\n## 我的规则\n" + rulesText() + "\n\n## 统计\n" + statsText(list) + "\n\n## 逐手记录（从早到晚）\n" +
+    "格式：编号 | 日期 | 类型·方向 | 标的 | 价格 | 止损 | 目标 | 心情 | 理由 | Claude看图结论 | 回看结果 | 心得 | 原话\n" + lb.text + "\n";
+}
+async function exportCopy(){
+  const t = exportText();
+  const box = $("#export-box");
+  try {
+    if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      await navigator.share({ title: "复盘台导出", text: t });
+      toast("已打开分享"); box.hidden = true; return;
+    }
+    await navigator.clipboard.writeText(t); toast("已复制，粘贴给任何 AI 就行"); box.hidden = true;
+  }
+  catch(e) { box.hidden = false; box.value = t; box.focus(); box.select(); toast("自动复制不了，已经全选，手动复制一下"); }
+}
+async function exportFile(){
+  try {
+    if (S.downloads) await S.downloads.save({ filename: "复盘台-" + todayStr() + ".md", data: exportText() });
+    else downloadText("复盘台-" + todayStr() + ".md", exportText(), "text/markdown;charset=utf-8");
+    toast("存好了");
+  }
+  catch(e) { if (e && e.code !== "declined") toast("没存成，改用「复制文字」"); }
+}
+function downloadText(filename, content, type){
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function backupLocal(){
+  if (S.mode !== "local") return;
+  const data = { format: "fupantai-local", version: 1, exportedAt: new Date().toISOString(),
+    entries: Local.data.entries, reviews: Local.data.reviews || {}, rules: rulesText() };
+  downloadText("复盘台备份-" + todayStr() + ".json", JSON.stringify(data), "application/json;charset=utf-8");
+  toast("备份已下载");
+}
+async function restoreLocal(file){
+  if (!file || S.mode !== "local") return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (data.format !== "fupantai-local" || data.version !== 1 || !data.entries ||
+        typeof data.entries !== "object" || Array.isArray(data.entries) ||
+        (data.reviews && (typeof data.reviews !== "object" || Array.isArray(data.reviews)))) throw new Error("format");
+    const entries = Object.assign({}, Local.data.entries);
+    const reviews = Object.assign({}, Local.data.reviews || {});
+    let added = 0;
+    for (const [id, entry] of Object.entries(data.entries)) {
+      if (!/^e[a-z0-9]+$/i.test(id) || !entry || typeof entry !== "object" || Array.isArray(entry)) continue;
+      if (!Object.hasOwn(entries, id)) { entries[id] = entry; added++; }
+    }
+    for (const [id, review] of Object.entries(data.reviews || {})) {
+      if (/^e[a-z0-9]+$/i.test(id) && review && typeof review === "object" && !Array.isArray(review) && !Object.hasOwn(reviews, id)) reviews[id] = review;
+    }
+    const rules = typeof Local.data.rules === "string" ? Local.data.rules : (typeof data.rules === "string" ? data.rules : undefined);
+    const merged = { entries, reviews, rules };
+    if (!LS.set(LOCAL_KEY, merged)) { toast("空间不够，导入未完成"); return; }
+    Local.data = merged; Local.emit(); closeSheet(); toast("恢复了 " + added + " 笔记录");
+  } catch(e) { toast("不是复盘台的 JSON 备份"); }
+}
+
+/* ---------------- sheets ---------------- */
+function openSheet(html){ $("#sheet-body").innerHTML = html; $("#sheet").hidden = false; document.body.style.overflow = "hidden"; }
+function closeSheet(){ $("#sheet").hidden = true; document.body.style.overflow = ""; S.edit = null; S.bf = null; }
+
+function openEdit(id){
+  const e = find(id); if (!e) return;
+  const no = moveNos().get(id);
+  S.edit = { id, kind: e.kind, side: e.side, moods: new Set(e.moods || []), reasons: new Set(e.reasons || []), shots: (e.shots || []).map(x => ({ key: x, id: x, url: shotSrc(x), status: "ok", keep: true })),
+    result: e.outcome ? e.outcome.result : null, delArm: false };
+  const f = (id2, label, v, mode) => '<div class="f"><label for="' + id2 + '">' + label + '</label><input class="inp" id="' + id2 + '" ' + (mode ? 'inputmode="' + mode + '"' : "") + ' value="' + esc(v == null ? "" : v) + '"></div>';
+  openSheet(
+    "<h3>第 " + no + " 手<small>" + fmtTime(e.createdAt) + "</small></h3>" +
+    '<div class="f"><label for="ed-text">原话</label><textarea class="inp" id="ed-text">' + esc(e.text) + "</textarea></div>" +
+    '<div class="f"><span class="flabel">类型</span><div class="kinds" id="ed-kind"></div></div>' +
+    '<div class="f"><span class="flabel">方向</span><div class="chips" id="ed-side"></div></div>' +
+    '<div class="grid2" style="margin-top:15px">' + f("ed-ticker", "标的", e.ticker) + f("ed-price", "价格", e.price, "decimal") + f("ed-stop", "止损", e.stop, "decimal") + f("ed-target", "目标", e.target, "decimal") + "</div>" +
+    '<div class="f"><span class="flabel">心情</span><div class="chips" id="ed-moods"></div></div>' +
+    '<div class="f"><span class="flabel">理由</span><div class="chips" id="ed-reasons"></div></div>' +
+    '<div class="f"><span class="flabel">截图</span><div class="thumbs" id="ed-shots"></div></div>' +
+    '<div class="f"><span class="flabel">回看结果</span><div class="chips" id="ed-out"></div></div>' +
+    '<div class="grid2" style="margin-top:10px">' + f("ed-pct", "涨跌 %", e.outcome && isNum(e.outcome.pct) ? Math.abs(e.outcome.pct) : "", "decimal") + '<div class="f"><label for="ed-lesson">心得</label><input class="inp" id="ed-lesson" value="' + esc(e.lesson || "") + '"></div></div>' +
+    '<div class="sheet-actions"><button class="btn btn-danger" data-act="ed-del" id="ed-del">删除</button><button class="btn-primary" data-act="ed-save">保存</button></div>'
+  );
+  renderEditChips(); renderEditShots();
+}
+function renderEditChips(){
+  const E = S.edit; if (!E) return;
+  $("#ed-kind").innerHTML = Object.keys(KINDS).map(k => '<button class="kind" data-act="ed-kind" data-k="' + k + '" aria-pressed="' + (E.kind === k) + '"><span class="stone ' + k + '"></span>' + KINDS[k] + "</button>").join("");
+  const sides = E.kind === "pass" ? [["buy","没买"],["sell","没卖"]] : [["buy","买"],["sell","卖"]];
+  $("#ed-side").innerHTML = sides.map(([k, l]) => '<button class="chip" data-act="ed-side" data-s="' + k + '" aria-pressed="' + (E.side === k) + '">' + l + "</button>").join("");
+  $("#ed-moods").innerHTML = MOODS.map(m => '<button class="chip' + (RISKY.has(m) ? " risky" : "") + '" data-act="ed-mood" data-m="' + m + '" aria-pressed="' + E.moods.has(m) + '">' + m + "</button>").join("");
+  const rs = [...new Set([...REASONS, ...E.reasons])];
+  $("#ed-reasons").innerHTML = rs.map(r => '<button class="chip" data-act="ed-reason" data-r="' + esc(r) + '" aria-pressed="' + E.reasons.has(r) + '">' + esc(r) + "</button>").join("");
+  const outs = E.kind === "pass" ? [["up","后来涨了"],["down","后来跌了"],["flat","没怎么动"]] : [["win","赚了"],["loss","亏了"],["flat","打平"],["open","还拿着"]];
+  const showOut = E.kind === "pass" || E.side !== "sell";
+  $("#ed-out").innerHTML = showOut ? outs.map(([k, l]) => '<button class="chip" data-act="ed-out" data-r="' + k + '" aria-pressed="' + (E.result === k) + '">' + l + "</button>").join("") + (E.result ? '<button class="chip" data-act="ed-out" data-r="" aria-pressed="false">清空</button>' : "") : '<span class="small" style="margin:0">卖出记录会自动结算它对应的那笔买入</span>';
+}
+function renderEditShots(){
+  const E = S.edit; if (!E || !$("#ed-shots")) return;
+  const canAdd = !(S.mode === "cloud" && !S.assets);
+  $("#ed-shots").innerHTML = E.shots.filter(s => !s.removed).map(s => '<div class="thumb"><img src="' + esc(s.url) + '" alt="截图">' +
+    (s.status === "up" ? '<span class="st">上传中</span>' : s.status === "err" ? '<span class="st">没传上</span>' : "") +
+    '<button class="x" data-act="ed-rm-shot" data-key="' + esc(s.key) + '" aria-label="去掉">×</button></div>').join("") +
+    (canAdd ? '<label class="thumb" style="display:grid;place-items:center;color:var(--ink-3);font-size:24px;cursor:pointer" for="ed-file">+</label><input type="file" id="ed-file" class="vh" accept="image/*" multiple>' : "");
+  const fi = $("#ed-file"); if (fi) fi.onchange = ev => { addShots(Array.from(ev.target.files || []), S.edit.shots); ev.target.value = ""; };
+}
+async function saveEdit(){
+  const E = S.edit; if (!E) return;
+  const e = find(E.id); if (!e) { closeSheet(); return; }
+  if (E.shots.some(s => s.status === "up")) { toast("截图还在上传"); return; }
+  const tk = $("#ed-ticker").value.trim() ? normTicker($("#ed-ticker").value) : null;
+  const patch = {
+    text: $("#ed-text").value.trim(), kind: E.kind, side: E.side, ticker: tk, market: marketOf(tk),
+    price: num($("#ed-price").value), stop: num($("#ed-stop").value), target: num($("#ed-target").value),
+    moods: [...E.moods], reasons: [...E.reasons], lesson: $("#ed-lesson").value.trim(),
+    shots: E.shots.filter(s => !s.removed && s.status === "ok").map(s => s.id), ai: e.ai === "pending" ? "done" : (e.ai || "off"),
+    locked: ["kind","side","ticker","price","stop","target","moods","reasons"]
+  };
+  if (tk !== e.ticker) patch.name = null;
+  let pct = num($("#ed-pct").value);
+  if (E.result) {
+    if (pct !== null) pct = ["loss","down"].includes(E.result) ? -Math.abs(pct) : ["win","up"].includes(E.result) ? Math.abs(pct) : pct;
+    patch.outcome = { result: E.result, pct, at: (e.outcome && e.outcome.result === E.result && e.outcome.at) || Date.now() };
+  } else patch.outcome = null;
+  const removed = E.shots.filter(s => s.removed && s.id && !String(s.id).startsWith("data:")).map(s => s.id);
+  const id = E.id;
+  closeSheet();
+  try { await queued(id, () => Store.set(id, Object.assign({}, stripId(e), patch))); toast("改好了"); }
+  catch(err) { toast(writeErr(err)); return; }
+  if (S.mode === "cloud" && S.assets) for (const a of removed) S.assets.delete(a).catch(() => {});
+  if (patch.side === "sell") pairSell(Object.assign({}, e, patch, { id }));
+}
+function stripId(e){ const o = JSON.parse(JSON.stringify(e)); delete o.id; return o; }
+async function deleteEntry(){
+  const E = S.edit; if (!E) return;
+  const btn = $("#ed-del");
+  if (!E.delArm) { E.delArm = true; btn.textContent = "再点一次，删掉"; return; }
+  const e = find(E.id); const id = E.id;
+  closeSheet();
+  try { await queued(id, () => Store.remove(id)); toast("删掉了"); } catch(err) { toast(writeErr(err)); return; }
+  if (e && S.mode === "cloud" && S.assets) for (const a of e.shots || []) S.assets.delete(a).catch(() => {});
+}
+
+function openSettings(){
+  const modeTxt = S.mode === "cloud" ? "云端同步，手机和电脑看到的是同一份" : "只存在这个浏览器里";
+  openSheet("<h3>设置</h3>" +
+    '<div style="margin-top:10px">' +
+    '<div class="f"><label for="settings-rules">我的交易规则</label><textarea class="inp" id="settings-rules" style="min-height:110px">' + esc(rulesText()) + '</textarea><p class="small">规则保存在当前浏览器，随 JSON 备份导出。</p><button class="btn" data-act="save-rules">保存规则</button></div>' +
+    '<div class="toggle-row"><span class="t">用 Claude 自动整理<small>' + (S.sample ? "存下后把一句话补成标的、价格、止损、心情、理由" : "这里用不了 Claude，只用本机的规则识别") + '</small></span><button class="sw" data-act="tg-ai" role="switch" aria-checked="' + (S.aiOn && !!S.sample) + '"' + (S.sample ? "" : " disabled") + ' aria-label="自动整理"></button></div>' +
+    '<div class="toggle-row"><span class="t">绿涨红跌<small>默认红涨绿跌（港股、A股习惯）</small></span><button class="sw" data-act="tg-gu" role="switch" aria-checked="' + S.greenUp + '" aria-label="绿涨红跌"></button></div>' +
+    '<div class="toggle-row"><span class="t">补录以前的交易<small>传券商成交记录截图，或者一行写一笔</small></span><button class="btn" data-act="backfill">打开</button></div>' +
+    (S.mode === "local" ? '<div class="toggle-row"><span class="t">备份记录和截图<small>换手机或清浏览器前，先保存 JSON</small></span><button class="btn" data-act="backup-json">导出</button></div>' +
+      '<div class="toggle-row"><span class="t">恢复备份<small>只补进缺少的记录，不覆盖现有记录</small></span><label class="btn" for="restore-json">选择文件</label><input class="vh" type="file" id="restore-json" accept=".json,application/json"></div>' : "") +
+    '<div class="toggle-row"><span class="t">存储<small>' + modeTxt + " · 共 " + S.entries.length + " 手</small></span></div>" +
+    "</div>");
+}
+
+/* ---------------- backfill ---------------- */
+function openBackfill(){
+  S.bf = { imgs: [], rows: [], busy: false, ctl: null };
+  openSheet("<h3>补录以前的交易</h3>" +
+    '<p class="small">' + (canChart() ? "可以传券商成交截图让 Claude 识别，也可以一行写一笔。" : "一行写一笔历史交易。") + '识别后先勾选确认，再记下。</p>' +
+    (canChart() ? '<div class="f"><span class="flabel">成交记录截图</span><div class="thumbs" id="bf-thumbs"></div></div>' : "") +
+    '<div class="f"><label for="bf-text">一行一笔</label><textarea class="inp" id="bf-text" placeholder="2026-09-10 买 ALAB 300 100股&#10;9/18 卖 ALAB 345&#10;9/12 买 0700 520"></textarea></div>' +
+    '<div class="row-btns" style="margin-top:12px"><button class="btn accent" data-act="bf-read" id="bf-read">识别</button><span class="small" id="bf-status" style="margin:0"></span></div>' +
+    '<div id="bf-rows"></div>');
+  renderBfThumbs();
+}
+function renderBfThumbs(){
+  const el = $("#bf-thumbs"); if (!el || !S.bf) return;
+  el.innerHTML = S.bf.imgs.map((b, i) => '<div class="thumb"><img src="' + b.url + '" alt="成交记录截图"><button class="x" data-act="bf-rm" data-i="' + i + '" aria-label="去掉">×</button></div>').join("") +
+    '<label class="thumb" style="display:grid;place-items:center;color:var(--ink-3);font-size:24px;cursor:pointer" for="bf-file">+</label><input type="file" id="bf-file" class="vh" accept="image/*" multiple>';
+  $("#bf-file").onchange = async ev => { for (const f of Array.from(ev.target.files || [])) { const b = await compress(f); S.bf.imgs.push({ blob: b, url: URL.createObjectURL(b) }); } ev.target.value = ""; renderBfThumbs(); };
+}
+function parseLineDate(line){
+  const y = new Date().getFullYear();
+  let m = line.match(/(20\d{2})[-/.年](\d{1,2})[-/.月](\d{1,2})/);
+  if (m) return { ts: new Date(+m[1], +m[2] - 1, +m[3], 12).getTime(), rest: line.replace(m[0], " ") };
+  m = line.match(/(^|\D)(\d{1,2})[/.月](\d{1,2})日?(?!\d)/);
+  if (m) { let d = new Date(y, +m[2] - 1, +m[3], 12); if (d > new Date()) d = new Date(y - 1, +m[2] - 1, +m[3], 12); return { ts: d.getTime(), rest: line.replace(m[0], " ") }; }
+  return { ts: null, rest: line };
+}
+async function bfRead(){
+  const B = S.bf; if (!B || B.busy) return;
+  const text = $("#bf-text").value.trim();
+  const rows = [];
+  for (const line of text.split("\n").map(s => s.trim()).filter(Boolean)) {
+    const d = parseLineDate(line); const p = parse(d.rest);
+    rows.push({ date: d.ts, ticker: p.ticker, name: p.name, side: p.side === "sell" ? "sell" : p.side === "buy" ? "buy" : null, price: p.price, qty: p.qty, on: !!(p.ticker && p.side) });
+  }
+  if (B.imgs.length && canChart()) {
+    B.busy = true; B.ctl = new AbortController();
+    $("#bf-read").disabled = true; $("#bf-status").textContent = "Claude 在读截图，大概半分钟到一分钟…";
+    const prompt = "这些是券商 App（比如富途牛牛）的历史订单或成交记录截图。把每一笔已经成交的买卖提取出来。今天是 " + todayStr() + "，截图里没有年份就按离今天最近的日期推断。只要已成交的，撤单和未成交的不要。\n" +
+      '返回 JSON 数组，每项：{"date":"YYYY-MM-DD","ticker":"美股大写代码 / 港股 0700.HK / A股 600519.SH","name":"中文简称或null","side":"buy"或"sell","price":数字,"qty":数字或null}\n看不清的填 null，不要编造。只回复这个 JSON 数组。';
+    try {
+      const arr = await S.sample.json(prompt, { images: B.imgs.slice(0, S.limits.images.maxCount || 1).map(x => x.blob), signal: B.ctl.signal });
+      if (Array.isArray(arr)) for (const r of arr) {
+        if (!r || typeof r !== "object") continue;
+        const tk = typeof r.ticker === "string" && r.ticker.trim() ? normTicker(r.ticker) : null;
+        const dm = typeof r.date === "string" ? r.date.match(/(\d{4})-(\d{1,2})-(\d{1,2})/) : null;
+        rows.push({ date: dm ? new Date(+dm[1], +dm[2] - 1, +dm[3], 12).getTime() : null, ticker: tk, name: typeof r.name === "string" ? r.name : null,
+          side: r.side === "sell" ? "sell" : r.side === "buy" ? "buy" : null, price: num(r.price), qty: num(r.qty), on: !!(tk && (r.side === "buy" || r.side === "sell")) });
+      }
+      $("#bf-status").textContent = "";
+    } catch(e) { $("#bf-status").textContent = e && e.code === "cancelled" ? "" : (killSample(e) ? sampleErr(e) : sampleErr(e)); }
+    B.busy = false; if ($("#bf-read")) $("#bf-read").disabled = false;
+  }
+  if (!S.bf) return;
+  B.rows = rows;
+  renderBfRows();
+}
+function renderBfRows(){
+  const B = S.bf; const el = $("#bf-rows"); if (!B || !el) return;
+  if (!B.rows.length) { el.innerHTML = '<p class="small">没读出成交记录。截图要能看到代码、方向、价格；手写的话一行一笔。</p>'; return; }
+  const n = B.rows.filter(r => r.on).length;
+  el.innerHTML = '<div class="bf-list">' + B.rows.map((r, i) => {
+    const d = r.date ? new Date(r.date) : null;
+    return '<label class="bf-item"><input type="checkbox" data-act="bf-tick" data-i="' + i + '"' + (r.on ? " checked" : "") + '><span class="mono" style="color:var(--ink-3);min-width:3.2em">' + (d ? (d.getMonth() + 1) + "/" + d.getDate() : "无日期") + "</span><span>" + (r.side === "sell" ? "卖" : r.side === "buy" ? "买" : "？") + '</span><b class="mono">' + esc(r.ticker || "？") + '</b><span class="mono" style="margin-left:auto">' + (isNum(r.price) ? fmt(r.price) : "—") + (isNum(r.qty) ? " × " + fmt(r.qty) : "") + "</span></label>";
+  }).join("") + "</div>" +
+  '<div class="sheet-actions"><button class="btn-primary" data-act="bf-save"' + (n ? "" : " disabled") + ">记下选中的 " + n + " 笔</button></div>" +
+  '<p class="small">卖出会自动和前面同一只的买入配对，算出这笔赚亏。补录的没有心情和理由，之后想起来可以点进去补。</p>';
+}
+async function bfSave(){
+  const B = S.bf; if (!B) return;
+  const rows = B.rows.filter(r => r.on && r.ticker && r.side).sort((a, b) => (a.date || Date.now()) - (b.date || Date.now()));
+  if (!rows.length) return;
+  const made = rows.map((r, i) => ({
+    id: newId() + i,
+    text: "补录：" + (r.side === "sell" ? "卖 " : "买 ") + r.ticker + (isNum(r.price) ? " " + fmt(r.price) : "") + (isNum(r.qty) ? " × " + fmt(r.qty) : ""),
+    kind: "trade", side: r.side, ticker: r.ticker, name: r.name || null, market: marketOf(r.ticker), price: r.price, stop: null, target: null, qty: r.qty, pct: null,
+    moods: [], reasons: [], shots: [], createdAt: (r.date || Date.now() - (rows.length - i) * 60e3) + i * 1000, ai: "done", locked: [], outcome: null, lesson: "", chart: null, backfill: true
+  }));
+  // pair inside the batch and against existing open buys
+  const pool = S.entries.concat(made);
+  const extUpdates = [];
+  for (const s of made.filter(m => m.side === "sell")) {
+    const b = openBuyFor(s, pool);
+    if (!b) continue;
+    const out = sellOutcome(s, b);
+    if (!out) continue;
+    const inBatch = made.find(m => m.id === b.id);
+    if (inBatch) inBatch.outcome = out; else { extUpdates.push([b.id, out]); b.outcome = out; }
+  }
+  closeSheet();
+  let ok = 0;
+  for (const m of made) { const id = m.id; const d = Object.assign({}, m); delete d.id; try { await queued(id, () => Store.set(id, d)); ok++; } catch(e) {} }
+  for (const [id, out] of extUpdates) { try { await queued(id, () => Store.update(id, { outcome: out })); } catch(e) {} }
+  toast("补录了 " + ok + " 笔");
+}
+
+/* ---------------- events ---------------- */
+function bind(){
+  const ta = $("#say");
+  ta.addEventListener("input", onType);
+  ["ticker", "price", "stop", "target"].forEach(k => {
+    const el = $("#c-" + k);
+    el.addEventListener("input", () => { S.compose.fields[k] = el.value; persistComposeDraft(); renderComposeBits(); });
+  });
+  $("#list-search").addEventListener("input", ev => { S.query = ev.target.value; renderList(Date.now()); });
+  ta.addEventListener("paste", ev => {
+    const files = Array.from((ev.clipboardData && ev.clipboardData.files) || []).filter(f => /^image\//.test(f.type));
+    if (files.length && !(S.mode === "cloud" && !S.assets)) { ev.preventDefault(); addShots(files, S.compose.shots); }
+  });
+  ta.addEventListener("keydown", ev => { if ((ev.metaKey || ev.ctrlKey) && ev.key === "Enter") { ev.preventDefault(); save(); } });
+  $("#c-file").addEventListener("change", ev => { addShots(Array.from(ev.target.files || []), S.compose.shots); ev.target.value = ""; });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape") { if (!$("#lb").hidden) $("#lb").hidden = true; else if (!$("#sheet").hidden) closeSheet(); } });
+  document.addEventListener("change", ev => {
+    const t = ev.target;
+    if (t.id === "restore-json") { restoreLocal(t.files && t.files[0]); t.value = ""; return; }
+    if (t.dataset && t.dataset.act === "bf-tick" && S.bf) { S.bf.rows[+t.dataset.i].on = t.checked; const n = S.bf.rows.filter(r => r.on).length; const b = document.querySelector('[data-act="bf-save"]'); if (b) { b.textContent = "记下选中的 " + n + " 笔"; b.disabled = !n; } }
+  });
+  document.addEventListener("click", ev => {
+    const el = ev.target.closest("[data-act]");
+    if (!el) return;
+    if (ev.target.closest("input,textarea") && el.dataset.act === "open") return;
+    if (el.tagName === "LABEL" || (el.tagName === "INPUT" && el.dataset.act !== "bf-tick")) return;
+    const a = el.dataset.act, d = el.dataset;
+    switch (a) {
+      case "tab": S.tab = d.t; LS.set("fpt2.tab", S.tab); window.scrollTo(0, 0); renderAll(); break;
+      case "kind": S.compose.kind = d.k; S.compose.kindLocked = true; if (d.k === "pass" && !S.compose.side) S.compose.side = "buy"; S.compose.sideLocked = d.k === "pass" ? true : S.compose.sideLocked; persistComposeDraft(); renderComposeBits(); break;
+      case "side": S.compose.side = d.s; S.compose.sideLocked = true; persistComposeDraft(); renderComposeBits(); break;
+      case "mood": { const m = S.compose.moods; const i = m.indexOf(d.m); if (i >= 0) m.splice(i, 1); else m.push(d.m); S.compose.moodsLocked = true; persistComposeDraft(); renderComposeBits(); break; }
+      case "save": save(); break;
+      case "rm-shot": {
+        const C = S.compose; const i = C.shots.findIndex(s => s.key === d.key);
+        if (i >= 0) { const s = C.shots[i]; C.shots.splice(i, 1); URL.revokeObjectURL(s.url); if (S.mode === "cloud" && S.assets && s.id) S.assets.delete(s.id).catch(() => {}); }
+        if (!C.shots.length) C.chart = null;
+        renderComposeBits(); break;
+      }
+      case "chart-compose": runChart("compose", S.compose.shots.filter(s => s.status === "ok" && s.blob).map(s => s.blob), $("#say").value.trim()); break;
+      case "chart-row": { const e = find(d.id); if (!e) break; S.chartRun = { target: d.id, text: "", ctl: new AbortController() }; renderAll();
+        blobsOf(e.shots).then(bs => { S.chartRun = null; if (!bs.length) { toast("截图读不出来，点进去重新传一张"); renderAll(); return; } runChart(d.id, bs, e.text); }); break; }
+      case "chart-stop": if (S.chartRun) S.chartRun.ctl.abort(); break;
+      case "chart-drop": S.compose.chart = null; renderComposeBits(); break;
+      case "settle": settle(d.id, d.r); break;
+      case "note-done": noteDone(d.id); break;
+      case "open": if (!ev.target.closest("button,a,summary,details .md")) openEdit(d.id); break;
+      case "tk": S.tk = d.tk; S.filter = "all"; S.tab = "list"; LS.set("fpt2.tab", S.tab); window.scrollTo(0, 0); renderAll(); break;
+      case "clear-tk": S.tk = null; renderAll(); break;
+      case "filter": S.filter = d.f; renderAll(); break;
+      case "go-queue": S.filter = "todo"; S.tk = null; S.tab = "list"; window.scrollTo(0, 0); renderAll(); break;
+      case "period": S.period = +d.p; LS.set("fpt2.period", S.period); renderReview(); break;
+      case "review-run": runReview(); break;
+      case "review-stop": if (S.reviewRun) S.reviewRun.ctl.abort(); break;
+      case "export-copy": exportCopy(); break;
+      case "export-file": exportFile(); break;
+      case "backup-json": backupLocal(); break;
+      case "save-rules": saveRules(); break;
+      case "lb": $("#lb-img").src = d.src; $("#lb").hidden = false; break;
+      case "close-lb": $("#lb").hidden = true; break;
+      case "settings": openSettings(); break;
+      case "close-sheet": if (S.bf && S.bf.ctl) S.bf.ctl.abort(); closeSheet(); break;
+      case "tg-ai": S.aiOn = !S.aiOn; LS.set("fpt2.ai", S.aiOn); el.setAttribute("aria-checked", String(S.aiOn)); break;
+      case "tg-gu": S.greenUp = !S.greenUp; LS.set("fpt2.gu", S.greenUp); document.body.classList.toggle("gu", S.greenUp); el.setAttribute("aria-checked", String(S.greenUp)); break;
+      case "backfill": openBackfill(); break;
+      case "bf-read": bfRead(); break;
+      case "bf-save": bfSave(); break;
+      case "bf-rm": if (S.bf) { S.bf.imgs.splice(+d.i, 1); renderBfThumbs(); } break;
+      case "ed-kind": S.edit.kind = d.k; if (d.k === "pass" && !S.edit.side) S.edit.side = "buy"; if (!["up","down","flat"].includes(S.edit.result) && d.k === "pass") S.edit.result = null; if (["up","down"].includes(S.edit.result) && d.k !== "pass") S.edit.result = null; renderEditChips(); break;
+      case "ed-side": S.edit.side = S.edit.side === d.s ? null : d.s; renderEditChips(); break;
+      case "ed-mood": S.edit.moods.has(d.m) ? S.edit.moods.delete(d.m) : S.edit.moods.add(d.m); renderEditChips(); break;
+      case "ed-reason": S.edit.reasons.has(d.r) ? S.edit.reasons.delete(d.r) : S.edit.reasons.add(d.r); renderEditChips(); break;
+      case "ed-out": S.edit.result = d.r || null; renderEditChips(); break;
+      case "ed-rm-shot": { const s = S.edit.shots.find(x => x.key === d.key); if (s) { if (s.keep) s.removed = true; else { S.edit.shots.splice(S.edit.shots.indexOf(s), 1); if (S.mode === "cloud" && S.assets && s.id) S.assets.delete(s.id).catch(() => {}); } } renderEditShots(); break; }
+      case "ed-save": saveEdit(); break;
+      case "ed-del": deleteEntry(); break;
+    }
+  });
+}
+
+boot();
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("./sw.js").then(() => navigator.serviceWorker.ready)
+    .then(() => { $("#offline-ready").hidden = false; }).catch(() => {});
+}
+})();
+</script>
+</body></html>
